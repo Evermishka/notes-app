@@ -24,7 +24,6 @@ export default defineConfig([
     },
     plugins: {
       react,
-      import: importPlugin,
     },
     rules: {
       eqeqeq: ['error', 'always'], // js.recommended → 'warn'
