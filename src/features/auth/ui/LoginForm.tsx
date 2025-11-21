@@ -82,6 +82,7 @@ export function LoginForm() {
           {...form.getInputProps('email')}
           disabled={state.isLoading}
           onFocus={handleFocus}
+          w="100%"
         />
         <PasswordInput
           label="Пароль"
@@ -90,6 +91,7 @@ export function LoginForm() {
           {...form.getInputProps('password')}
           disabled={state.isLoading}
           onFocus={handleFocus}
+          w="100%"
         />
         {state.error && <Alert title={getServerErrorMessage()} color="red" mt="md" />}
         <Button
