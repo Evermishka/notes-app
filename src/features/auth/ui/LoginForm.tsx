@@ -11,7 +11,7 @@ import {
 } from '../model';
 import { ROUTES } from '@/shared';
 
-export function LoginForm() {
+export const LoginForm = () => {
   const navigate = useNavigate();
   const { state, login, clearError } = useAuthContext();
 
@@ -106,4 +106,4 @@ export function LoginForm() {
       </Stack>
     </Box>
   );
-}
+};

@@ -9,7 +9,7 @@ import {
 import notesIcon from '@/assets/notes.svg';
 import { APP_NAME, ROUTES } from '@/shared';
 
-export function Header() {
+export const Header = () => {
   const navigate = useNavigate();
   const { state, logout } = useAuthContext();
 
@@ -71,4 +71,4 @@ export function Header() {
       </Group>
     </Group>
   );
-}
+};
