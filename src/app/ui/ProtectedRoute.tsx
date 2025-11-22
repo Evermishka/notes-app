@@ -1,8 +1,8 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { Center, Loader } from '@mantine/core';
-import { useAuthContext } from '@/features';
-import { ROUTES } from '@/shared';
+import { useAuthContext } from '@/features/auth';
+import { ROUTES } from '@/shared/config';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;

@@ -9,7 +9,7 @@ import {
   PASSWORD_MIN_LENGTH,
   ERROR_MESSAGES,
 } from '../model';
-import { ROUTES } from '@/shared';
+import { ROUTES } from '@/shared/config';
 
 export const LoginForm = () => {
   const navigate = useNavigate();

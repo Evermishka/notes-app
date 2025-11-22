@@ -1,4 +1,4 @@
-import type { User } from '@/entities';
+import type { User } from '@/entities/user';
 
 export class AuthService {
   async login(email: string, password: string): Promise<{ user: User; token: string }> {

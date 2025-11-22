@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginPage, MainPage, NotFoundPage } from '@/pages';
-import { ROUTES } from '@/shared';
 import { ProtectedRoute } from './ui';
+import { ROUTES } from '@/shared/config';
 
 export const Router = () => {
   return (
