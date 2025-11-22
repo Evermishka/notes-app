@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Container, Title, Box, Button, Group } from '@mantine/core';
-import { ROUTES } from '@/shared';
+import { ROUTES } from '@/shared/config';
 
 export const NotFoundPage = () => {
   const navigate = useNavigate();

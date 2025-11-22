@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '@/features';
+import { useAuthContext } from '@/features/auth';
 import { Group, Button, Text, Box } from '@mantine/core';
 import {
   ArrowLeftEndOnRectangleIcon,
   ArrowRightStartOnRectangleIcon,
 } from '@heroicons/react/24/outline';
 import notesIcon from '@/assets/notes.svg';
-import { APP_NAME, ROUTES } from '@/shared';
+import { APP_NAME, ROUTES } from '@/shared/config';
 
 export const Header = () => {
   const navigate = useNavigate();
