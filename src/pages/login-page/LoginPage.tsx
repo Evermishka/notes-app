@@ -1,34 +1,30 @@
-import { Container, Center, Box } from '@mantine/core';
+import { Container, Center, AppShell } from '@mantine/core';
 import { Header } from '@/widgets/header';
-import { LoginForm } from '@/features/auth'; // Предполагаем, что LoginForm уже есть
+import { LoginForm } from '@/features/auth';
+import { SIZES } from '@/shared/config';
 
 export const LoginPage = () => {
   return (
-    <Box
-      component="div"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        backgroundColor: 'var(--mantine-color-gray-0)',
-      }}
-    >
-      {/* Header на всю ширину вверху */}
-      <Header />
+    <AppShell padding="md" header={{ height: SIZES.headerHeight }}>
+      <AppShell.Header>
+        <Header />
+      </AppShell.Header>
 
-      {/* Основной контент — центрирован */}
-      <Center
-        component="main"
-        style={{
-          flex: 1,
-          width: '100%',
-          padding: 'var(--mantine-spacing-md)',
-        }}
-      >
-        <Container w="100%">
-          <LoginForm />
-        </Container>
-      </Center>
-    </Box>
+      <AppShell.Main>
+        {' '}
+        <Center
+          component="main"
+          style={{
+            flex: 1,
+            width: '100%',
+            padding: 'var(--mantine-spacing-md)',
+          }}
+        >
+          <Container w="100%">
+            <LoginForm />
+          </Container>
+        </Center>
+      </AppShell.Main>
+    </AppShell>
   );
 };
