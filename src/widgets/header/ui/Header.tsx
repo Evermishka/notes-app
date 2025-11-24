@@ -25,7 +25,7 @@ export const Header = () => {
   const isAuthenticated = state.isAuthenticated;
 
   return (
-    <Group justify="space-between" align="center" h="60px" px="md" py="sm">
+    <Group justify="space-between" align="center" px="md" py="sm" style={{ flexGrow: '1' }}>
       {/* Левая часть: иконка и название */}
       <Group gap="xs" align="center">
         <Box
