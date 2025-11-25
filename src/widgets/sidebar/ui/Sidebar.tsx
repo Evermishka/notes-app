@@ -1,12 +1,12 @@
-import { Box } from '@mantine/core';
-import { NotesList } from '@/features/notes-crud';
-import { ActionPanel } from '../../action-panel';
+import { Stack } from '@mantine/core';
+import { AddNoteButton, NotesList, SearchBar } from '@/features/notes-crud';
 
 export const Sidebar = () => {
   return (
-    <Box>
-      <ActionPanel />
+    <Stack p="md" gap="md" w="100%" h="100vh">
+      <AddNoteButton />
+      <SearchBar />
       <NotesList />
-    </Box>
+    </Stack>
   );
 };

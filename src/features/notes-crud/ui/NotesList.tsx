@@ -1,14 +1,15 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { useNotesSelectors, useNotesContext } from '@/features/notes-crud';
-import { useKeyboardNavigation } from '@/shared/hooks/use-keyboard-navigation';
+import { useNotesSelectors, useNotesContext, useFilteredNotes } from '@/features/notes-crud';
+import { useKeyboardNavigation } from '@/shared/hooks';
 import { Stack, Text, Skeleton, Alert, ScrollArea } from '@mantine/core';
 import { NoteItem } from './NoteItem';
 import type { Note } from '@/entities/note';
 
 export const NotesList = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { allNotes, isLoading, currentError } = useNotesSelectors();
+  const { allNotes, isLoading, currentError, currentSearchQuery } = useNotesSelectors();
   const { selectedNote, setSelectedNote } = useNotesContext();
+  const filteredNotes = useFilteredNotes(allNotes, currentSearchQuery);
   const noteRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const handleNoteSelect = useCallback(
@@ -18,14 +19,14 @@ export const NotesList = () => {
     [setSelectedNote]
   );
 
-  const selectedIndex = allNotes.findIndex((note) => note.id === selectedNote?.id);
+  const selectedIndex = filteredNotes.findIndex((note) => note.id === selectedNote?.id);
 
   const { handleArrowUp, handleArrowDown } = useKeyboardNavigation({
     refs: noteRefs,
-    length: allNotes.length,
+    length: filteredNotes.length,
     currentIndex: selectedIndex,
     setSelectedItem: setSelectedNote,
-    allItems: allNotes,
+    allItems: filteredNotes,
   });
 
   useEffect(() => {
@@ -66,13 +67,13 @@ export const NotesList = () => {
 
   return (
     <ScrollArea
-      h="calc(100vh - 100px)"
+      h="calc(100vh - 200px)"
       ref={scrollAreaRef}
       role="listbox"
       aria-activedescendant={selectedNote?.id}
     >
       <Stack gap="xs">
-        {allNotes.map((note: Note, index) => (
+        {filteredNotes.map((note: Note, index) => (
           <NoteItem
             id={note.id}
             key={note.id}

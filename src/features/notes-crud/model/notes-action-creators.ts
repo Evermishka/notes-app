@@ -1,7 +1,7 @@
 import { NOTES_ACTIONS } from './notes-actions.const';
 import type { Note } from '@/entities/note';
 
-export const selectNoteAction = (note: Note) => ({
+export const selectNoteAction = (note: Note | null) => ({
   type: NOTES_ACTIONS.SET_SELECT_NOTE,
   payload: note,
 });
