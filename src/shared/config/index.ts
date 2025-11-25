@@ -1,4 +1,3 @@
-export * from './app-name.const';
-export * from './routes.const';
-export * from './ui-sidebar.consts';
-export * from './ui.const';
+export * from './app';
+export * from './routing';
+export * from './ui';

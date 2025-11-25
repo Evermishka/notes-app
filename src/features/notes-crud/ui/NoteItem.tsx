@@ -2,11 +2,7 @@ import React, { useCallback, forwardRef } from 'react';
 import { Flex, Text, UnstyledButton } from '@mantine/core';
 import type { Note } from '@/entities/note';
 import { truncateTitle, truncateContent, formatDate } from '@/shared/utils';
-import {
-  SELECTED_BACKGROUND,
-  SELECTED_BORDER,
-  HOVER_BACKGROUND,
-} from '@/shared/config/ui-sidebar.consts';
+import { SELECTED_BACKGROUND, SELECTED_BORDER, HOVER_BACKGROUND } from '@/shared/config';
 
 interface NoteItemProps {
   id: string;

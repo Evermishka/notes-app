@@ -3,11 +3,8 @@ import { Button, Stack } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useNotesContext } from '@/features/notes-crud';
-
-// Константы для строк
-const ADD_BUTTON_TEXT = 'Новая заметка';
-const ERROR_TITLE = 'Ошибка';
-const ERROR_MESSAGE = 'Не удалось добавить заметку';
+import { formatDate } from '@/shared/utils/text-utils';
+import { ERROR_TITLE, ERROR_MESSAGE, ADD_BUTTON_TEXT } from '@/shared/config';
 
 export const AddNoteButton: React.FC = () => {
   const { loading, error, addNote } = useNotesContext();
@@ -20,14 +17,7 @@ export const AddNoteButton: React.FC = () => {
 
   const handleAdd = useCallback(async (): Promise<void> => {
     const now = new Date();
-    const formattedDate = now.toLocaleString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Europe/Moscow',
-    });
+    const formattedDate = formatDate(now);
     const title = `Новая заметка ${formattedDate}`;
     const content = '';
     try {
