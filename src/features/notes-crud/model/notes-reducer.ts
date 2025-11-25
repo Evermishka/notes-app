@@ -19,7 +19,7 @@ export function notesReducer(state: NotesState, action: NotesAction): NotesState
     case NOTES_ACTIONS.SET_NOTES:
       return { ...state, notes: action.payload, error: null };
     case NOTES_ACTIONS.ADD_NOTE:
-      return { ...state, notes: [...state.notes, action.payload] };
+      return { ...state, notes: [action.payload, ...state.notes], selectedNote: action.payload };
     case NOTES_ACTIONS.UPDATE_NOTE:
       return {
         ...state,
