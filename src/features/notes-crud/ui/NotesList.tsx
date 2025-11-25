@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { useNotesSelectors, useNotesContext } from '@/features/notes-crud';
-import { useKeyboardNavigation } from '@/shared/hooks/useKeyboardNavigation';
+import { useKeyboardNavigation } from '@/shared/hooks/use-keyboard-navigation';
 import { Stack, Text, Skeleton, Alert, ScrollArea } from '@mantine/core';
 import { NoteItem } from './NoteItem';
 import type { Note } from '@/entities/note';

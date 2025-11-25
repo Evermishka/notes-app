@@ -1,3 +1,3 @@
 export * from './AddNoteButton';
-export * from './notes-provider';
+export * from './NotesProvider';
 export * from './NotesList';

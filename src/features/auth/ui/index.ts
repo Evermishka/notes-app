@@ -1,2 +1,2 @@
-export * from './auth-provider';
+export * from './AuthProvider';
 export * from './LoginForm';
