@@ -25,6 +25,6 @@ export type NotesAction =
   | { type: typeof NOTES_ACTIONS.ADD_NOTE; payload: Note }
   | { type: typeof NOTES_ACTIONS.UPDATE_NOTE; payload: Note }
   | { type: typeof NOTES_ACTIONS.REMOVE_NOTE; payload: string }
-  | { type: typeof NOTES_ACTIONS.SET_SELECT_NOTE; payload: Note }
+  | { type: typeof NOTES_ACTIONS.SET_SELECT_NOTE; payload: Note | null }
   | { type: typeof NOTES_ACTIONS.SET_ERROR; payload: string | null }
   | { type: typeof NOTES_ACTIONS.SET_SEARCH_QUERY; payload: string };

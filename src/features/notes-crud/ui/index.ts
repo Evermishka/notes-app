@@ -1,3 +1,4 @@
 export * from './AddNoteButton';
-export * from './NotesProvider';
 export * from './NotesList';
+export * from './NotesProvider';
+export * from './SearchBar';

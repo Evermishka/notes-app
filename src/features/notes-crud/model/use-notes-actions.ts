@@ -106,7 +106,7 @@ export const useNotesActions = (dispatch: React.Dispatch<NotesAction>) => {
     }
   };
 
-  const setSelectedNote = (note: Note) => {
+  const setSelectedNote = (note: Note | null) => {
     dispatch(selectNoteAction(note));
   };
 

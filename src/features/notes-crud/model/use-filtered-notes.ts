@@ -1,20 +1,18 @@
 import { useMemo } from 'react';
-import { useNotesSelectors } from './use-notes-selectors';
+import type { Note } from '@/entities/note';
 
-export const useFilteredNotes = () => {
-  const { allNotes, currentSearchQuery } = useNotesSelectors();
-
+export const useFilteredNotes = (allNotes: Note[], searchQuery: string) => {
   const filteredNotes = useMemo(() => {
-    if (!currentSearchQuery.trim()) {
+    if (!searchQuery.trim()) {
       return allNotes;
     }
 
-    const query = currentSearchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase();
     return allNotes.filter(
       (note) =>
         note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query)
     );
-  }, [allNotes, currentSearchQuery]);
+  }, [allNotes, searchQuery]);
 
   return filteredNotes;
 };

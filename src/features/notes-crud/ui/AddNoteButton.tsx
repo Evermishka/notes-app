@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Button, Stack } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useNotesContext } from '@/features/notes-crud';
@@ -28,10 +28,15 @@ export const AddNoteButton: React.FC = () => {
   }, [addNote]);
 
   return (
-    <Stack gap="lg" p="md">
-      <Button leftSection={<PlusIcon width={16} />} onClick={handleAdd} loading={loading} fullWidth>
-        {ADD_BUTTON_TEXT}
-      </Button>
-    </Stack>
+    <Button
+      leftSection={<PlusIcon width={16} />}
+      onClick={handleAdd}
+      loading={loading}
+      fullWidth
+      p="sm"
+      h="40px"
+    >
+      {ADD_BUTTON_TEXT}
+    </Button>
   );
 };
