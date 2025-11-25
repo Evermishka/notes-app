@@ -14,10 +14,12 @@ export const truncateContent = (text: string): string => {
 
 export const formatDate = (date: string | Date): string => {
   const d = new Date(date);
-  return d.toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'short',
+  return d.toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: 'Europe/Moscow',
   });
 };
