@@ -1,4 +1,4 @@
-import type { CreateNoteDTO, Note, UpdateNoteDTO } from '@/entities';
+import type { CreateNoteDTO, Note, UpdateNoteDTO } from '@/entities/note';
 import { noteService } from '../api';
 import {
   setLoadingAction,

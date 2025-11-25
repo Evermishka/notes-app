@@ -15,7 +15,7 @@ export type NotesContextType = NotesState & {
   removeNote: (id: string) => Promise<void>;
   fetchNotes: () => Promise<void>;
   fetchNote: (id: string) => Promise<void>;
-  setSelectedNote: (note: Note) => void;
+  setSelectedNote: (note: Note | null) => void;
   setSearchQuery: (query: string) => void;
 };
 

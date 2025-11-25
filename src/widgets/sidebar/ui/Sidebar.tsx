@@ -1,5 +1,5 @@
+import { NotesList } from '@/features/notes-crud';
 import { Box, Text } from '@mantine/core';
-import { NotesList } from '../../../features/notes-crud/ui/NotesList';
 
 export const Sidebar = () => {
   return (

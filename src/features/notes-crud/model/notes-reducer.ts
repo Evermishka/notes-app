@@ -1,8 +1,9 @@
 import type { NotesAction, NotesState } from './notes-types';
 import { NOTES_ACTIONS } from './notes-actions.const';
+import { testNotes } from './test-notes';
 
 export const initialState: NotesState = {
-  notes: [],
+  notes: testNotes,
   loading: false,
   error: null,
   selectedNote: null,
