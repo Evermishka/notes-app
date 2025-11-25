@@ -1,1 +1,1 @@
-export * from './view-editor-provider';
+export * from './ViewEditorProvider';
