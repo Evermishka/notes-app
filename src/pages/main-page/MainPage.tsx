@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppShell, Burger, Group } from '@mantine/core';
 import { Header } from '@/widgets/header';
 import { Sidebar } from '@/widgets/sidebar';
+import { NoteViewerEmptyState, NoteHeader, NoteViewer } from '@/features/notes-view-editor';
 import { SIZES } from '@/shared/config';
 
 export const MainPage = () => {
@@ -31,7 +32,9 @@ export const MainPage = () => {
         </AppShell.Navbar>
 
         <AppShell.Main>
-          <div>редактор заметок</div>
+          <NoteViewerEmptyState />
+          <NoteHeader />
+          <NoteViewer />
         </AppShell.Main>
       </AppShell>
     </>
