@@ -1,3 +1,4 @@
 export const ADD_BUTTON_TEXT = 'Новая заметка';
 export const ERROR_TITLE = 'Ошибка';
 export const ERROR_MESSAGE = 'Не удалось добавить заметку';
+export const NOTE_EMPTY_VIEW_TEXT = 'Выберите заметку для просмотра или создайте новую';
