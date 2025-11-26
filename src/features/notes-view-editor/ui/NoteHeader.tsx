@@ -1,4 +1,4 @@
-import { Group, Button, Tooltip, Title } from '@mantine/core';
+import { Group, Button, Tooltip, Title, TextInput } from '@mantine/core';
 import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { useNotesSelectors } from '@/features/notes-crud/model/use-notes-selectors';
 import { useViewEditorContext } from '../model/use-view-editor-context';
@@ -26,7 +26,10 @@ export const NoteHeader = () => {
 
   return (
     <Group justify="space-between" align="center">
-      <Title order={1}>{currentSelectedNote.title}</Title>
+      {mode === 'view' && <Title order={1}>{currentSelectedNote.title}</Title>}
+      {mode === 'edit' && (
+        <TextInput value={currentSelectedNote.title} size="xl" style={{ flex: 1 }} />
+      )}
       <Group gap="xs">
         {mode === 'view' && (
           <Tooltip label="Редактировать">

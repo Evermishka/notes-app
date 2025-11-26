@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo, useReducer } from 'react';
+import { type ReactNode, useEffect, useMemo, useReducer } from 'react';
 import {
   initialState,
   NotesContext,
@@ -15,6 +15,11 @@ export const NotesProvider = ({ children }: NotesProviderProps) => {
   const [state, dispatch] = useReducer(notesReducer, initialState);
 
   const actions = useNotesActions(dispatch);
+
+  useEffect(() => {
+    actions.fetchNotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const value: NotesContextType = useMemo(
     () => ({

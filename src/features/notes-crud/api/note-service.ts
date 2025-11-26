@@ -1,8 +1,9 @@
-import type { Note, CreateNoteDTO, UpdateNoteDTO } from '@/entities';
+import type { Note, CreateNoteDTO, UpdateNoteDTO } from '@/entities/note';
+import { testNotes } from '../model/test-notes';
 
 class NoteService {
   private static instance: NoteService;
-  private notes: Note[] = [];
+  private notes: Note[] = testNotes;
 
   private constructor() {}
 
