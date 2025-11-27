@@ -1,33 +1,42 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AppShell, Burger, Group } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { Header } from '@/widgets/header';
 import { Sidebar } from '@/widgets/notes-sidebar';
 import { NoteWorkspace } from '@/widgets/note-workspace';
-import { useNoteDispatch } from '@/entities/note';
+import { useNoteStore } from '@/entities/note';
 import { SIZES, NOTES_LOAD_ERROR_TITLE, NOTES_LOAD_ERROR_MESSAGE } from '@/shared/config';
 
 export const MainPage = () => {
   const [opened, setOpened] = useState(false);
-  const { actions } = useNoteDispatch();
+  const { state, actions } = useNoteStore();
   const toggleDrawer = () => setOpened((o) => !o);
+  const lastErrorRef = useRef<string | null>(null);
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
-    const loadNotes = async () => {
-      try {
-        await actions.load();
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : NOTES_LOAD_ERROR_MESSAGE;
-        console.error('Failed to load notes:', error);
-        notifications.show({
-          title: NOTES_LOAD_ERROR_TITLE,
-          message: errorMessage,
-          color: 'red',
-        });
-      }
-    };
-    loadNotes();
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
+    void actions.load().catch((error) => {
+      console.error('Failed to load notes:', error);
+    });
   }, [actions]);
+
+  useEffect(() => {
+    if (!state.error) {
+      lastErrorRef.current = null;
+      return;
+    }
+    if (state.notes.length > 0 || lastErrorRef.current === state.error) return;
+
+    lastErrorRef.current = state.error;
+    console.error('Failed to load notes:', state.error);
+    notifications.show({
+      title: NOTES_LOAD_ERROR_TITLE,
+      message: state.error ?? NOTES_LOAD_ERROR_MESSAGE,
+      color: 'red',
+    });
+  }, [state.error, state.notes.length]);
 
   return (
     <>
