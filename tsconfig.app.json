@@ -34,10 +34,7 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-
-    /* Ignore deprecations */
-    "ignoreDeprecations": "6.0" // Необходимо для "baseUrl" и "paths"
+    "noUncheckedSideEffectImports": true
   },
   "include": ["src"]
 }
