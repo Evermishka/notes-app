@@ -59,14 +59,14 @@ export const useNoteStore = () => {
 export const useNoteContext = () => {
   const [state, dispatch] = useReducer(noteReducer, initialNoteState);
 
-  const actions = useMemo(() => createNoteActions(dispatch), []);
+  const actions = useMemo(() => createNoteActions(dispatch), [dispatch]);
 
   const dispatchValue = useMemo(
     () => ({
       dispatch,
       actions,
     }),
-    [actions]
+    [dispatch, actions]
   );
 
   return { state, dispatchValue };
