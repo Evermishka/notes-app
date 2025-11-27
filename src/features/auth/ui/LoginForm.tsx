@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from '@mantine/form';
 import { TextInput, PasswordInput, Button, Alert, Box, Stack } from '@mantine/core';
 import {
-  useAuthContext,
+  useAuth,
   VALIDATION_MESSAGES,
   EMAIL_REGEX,
   PASSWORD_MIN_LENGTH,
@@ -13,7 +13,7 @@ import { ROUTES } from '@/shared/config';
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const { state, login, clearError } = useAuthContext();
+  const { state, login, clearError } = useAuth();
 
   const form = useForm({
     mode: 'uncontrolled',
