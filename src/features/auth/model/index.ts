@@ -1,7 +1,5 @@
-export * from './auth-context';
-export * from './auth-types';
-export * from './auth.const';
-export * from './use-auth-actions';
-export * from './use-auth-context';
-export * from './use-auth-selector';
-export * from './use-auth-store';
+// Public API
+export { AuthProvider } from '../ui/AuthProvider';
+export { useAuth } from './auth-store';
+export type { AuthState, AuthError, LoginCredentials } from './types';
+export { EMAIL_REGEX, PASSWORD_MIN_LENGTH, VALIDATION_MESSAGES, ERROR_MESSAGES } from './constants';

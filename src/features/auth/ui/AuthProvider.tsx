@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useMemo } from 'react';
-import { useAuthStore, useAuthSelector, useAuthActions, AuthContext } from '../model';
+import { AuthContext, useAuthStore, useAuthSelector, useAuthActions } from '../model/auth-store';
 
 type AuthProviderProps = {
   children: ReactNode;

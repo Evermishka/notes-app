@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '@/features/auth';
+import { useAuth } from '@/features/auth';
 import { Group, Button, Text, Box } from '@mantine/core';
 import {
   ArrowLeftEndOnRectangleIcon,
@@ -11,7 +11,7 @@ import { APP_NAME, ROUTES } from '@/shared/config';
 
 export const Header = () => {
   const navigate = useNavigate();
-  const { state, logout } = useAuthContext();
+  const { state, logout } = useAuth();
 
   const handleLogout = useCallback(() => {
     logout();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { Center, Loader } from '@mantine/core';
-import { useAuthContext } from '@/features/auth';
+import { useAuth } from '@/features/auth';
 import { ROUTES } from '@/shared/config';
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ export const ProtectedRoute = ({
   fallback,
   redirectTo = ROUTES.LOGIN,
 }: ProtectedRouteProps) => {
-  const { state } = useAuthContext();
+  const { state } = useAuth();
   const { isAuthenticated, isLoading, error } = state;
 
   if (isLoading) {
