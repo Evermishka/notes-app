@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { AppShell, Burger, Group } from '@mantine/core';
 import { Header } from '@/widgets/header';
-import { Sidebar } from '@/widgets/sidebar';
-import { NoteWorkspace } from '@/features/notes-view-editor';
+import { Sidebar } from '@/widgets/notes-sidebar';
+import { NoteWorkspace } from '@/widgets/note-workspace';
 import { SIZES } from '@/shared/config';
 
 export const MainPage = () => {
