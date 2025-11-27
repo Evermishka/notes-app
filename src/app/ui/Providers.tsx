@@ -1,6 +1,5 @@
 import { AuthProvider } from '@/features/auth';
-import { NotesProvider } from '@/features/notes-crud';
-import { ViewEditorProvider } from '@/features/notes-view-editor';
+import { NoteProvider } from '@/entities/note';
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 
@@ -12,9 +11,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <MantineProvider>
       <AuthProvider>
-        <NotesProvider>
-          <ViewEditorProvider>{children}</ViewEditorProvider>
-        </NotesProvider>
+        <NoteProvider>{children}</NoteProvider>
       </AuthProvider>
     </MantineProvider>
   );
