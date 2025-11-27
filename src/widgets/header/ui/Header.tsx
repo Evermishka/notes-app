@@ -7,7 +7,15 @@ import {
   ArrowRightStartOnRectangleIcon,
 } from '@heroicons/react/24/outline';
 import notesIcon from '@/assets/notes.svg';
-import { APP_NAME, ROUTES } from '@/shared/config';
+import {
+  APP_NAME,
+  ROUTES,
+  HEADER_AUTH_BUTTON_TEXT,
+  HEADER_AUTH_BUTTON_VARIANT,
+  HEADER_AUTH_BUTTON_ARIA,
+  HEADER_AUTH_BUTTON_SIZE,
+  HEADER_ICON_SIZE,
+} from '@/shared/config';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -47,25 +55,35 @@ export const Header = () => {
       <Group gap="xs">
         {isAuthenticated ? (
           <Button
-            variant="light"
-            size="sm"
+            variant={HEADER_AUTH_BUTTON_VARIANT.logout}
+            size={HEADER_AUTH_BUTTON_SIZE}
             leftSection={
-              <ArrowRightStartOnRectangleIcon width={18} height={18} aria-hidden="true" />
+              <ArrowRightStartOnRectangleIcon
+                width={HEADER_ICON_SIZE}
+                height={HEADER_ICON_SIZE}
+                aria-hidden="true"
+              />
             }
             onClick={handleLogout}
-            aria-label="Выход из аккаунта"
+            aria-label={HEADER_AUTH_BUTTON_ARIA.logout}
           >
-            Выход
+            {HEADER_AUTH_BUTTON_TEXT.logout}
           </Button>
         ) : (
           <Button
-            variant="default"
-            size="sm"
-            leftSection={<ArrowLeftEndOnRectangleIcon width={18} height={18} aria-hidden="true" />}
+            variant={HEADER_AUTH_BUTTON_VARIANT.login}
+            size={HEADER_AUTH_BUTTON_SIZE}
+            leftSection={
+              <ArrowLeftEndOnRectangleIcon
+                width={HEADER_ICON_SIZE}
+                height={HEADER_ICON_SIZE}
+                aria-hidden="true"
+              />
+            }
             onClick={handleLogin}
-            aria-label="Вход в аккаунт"
+            aria-label={HEADER_AUTH_BUTTON_ARIA.login}
           >
-            Войти
+            {HEADER_AUTH_BUTTON_TEXT.login}
           </Button>
         )}
       </Group>

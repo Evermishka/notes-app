@@ -3,6 +3,12 @@ import { readLocalStorageValue } from '@mantine/hooks';
 import { Text } from '@mantine/core';
 import { SimpleMdeReact } from 'react-simplemde-editor';
 import { useNoteStore } from '@/entities/note';
+import {
+  NOTE_EDITOR_AUTOSAVE_DELAY,
+  NOTE_EDITOR_AUTOSAVE_ID,
+  NOTE_EDITOR_LOADING_TEXT,
+  NOTE_EDITOR_STORAGE_KEY,
+} from '@/shared/config';
 import 'easymde/dist/easymde.min.css';
 
 export const NoteEditor = () => {
@@ -15,7 +21,9 @@ export const NoteEditor = () => {
   useEffect(() => {
     if (content === '') {
       const initialValue =
-        state.selectedNote?.content || readLocalStorageValue({ key: 'notes-app' }) || '';
+        state.selectedNote?.content ||
+        readLocalStorageValue({ key: NOTE_EDITOR_STORAGE_KEY }) ||
+        '';
       setContent(initialValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -46,13 +54,13 @@ export const NoteEditor = () => {
       spellChecker: false,
       autosave: {
         enabled: true,
-        uniqueId: 'notes-app',
-        delay: 1000,
+        uniqueId: NOTE_EDITOR_AUTOSAVE_ID,
+        delay: NOTE_EDITOR_AUTOSAVE_DELAY,
       },
     };
   }, []);
 
-  if (!state.selectedNote) return <Text>Загрузка редактора...</Text>;
+  if (!state.selectedNote) return <Text>{NOTE_EDITOR_LOADING_TEXT}</Text>;
 
   return (
     <div className="note-editor">

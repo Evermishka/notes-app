@@ -2,7 +2,22 @@ import React, { useCallback, forwardRef } from 'react';
 import { Flex, Text, UnstyledButton } from '@mantine/core';
 import type { Note } from '@/entities/note';
 import { truncateTitle, truncateContent, formatDate } from '@/shared/utils';
-import { SELECTED_BACKGROUND, SELECTED_BORDER, HOVER_BACKGROUND } from '@/shared/config';
+import {
+  SELECTED_BACKGROUND,
+  SELECTED_BORDER,
+  HOVER_BACKGROUND,
+  NOTE_ITEM_PADDING,
+  NOTE_ITEM_BORDER_RADIUS,
+  NOTE_ITEM_TITLE_SIZE,
+  NOTE_ITEM_TITLE_WEIGHT,
+  NOTE_ITEM_LINE_CLAMP_TITLE,
+  NOTE_ITEM_CONTENT_SIZE,
+  NOTE_ITEM_LINE_CLAMP_CONTENT,
+  NOTE_ITEM_DATE_SIZE,
+  NOTE_ITEM_LINE_CLAMP_DATE,
+  NOTE_ITEM_TEXT_MARGIN,
+  NOTE_ITEM_STACK_GAP,
+} from '@/shared/config';
 
 interface NoteItemProps {
   id: string;
@@ -52,8 +67,8 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
         tabIndex={0}
         style={{
           width: '100%',
-          padding: '8px',
-          borderRadius: '4px',
+          padding: NOTE_ITEM_PADDING,
+          borderRadius: NOTE_ITEM_BORDER_RADIUS,
           backgroundColor: isSelected ? SELECTED_BACKGROUND : 'transparent',
           border: `1px solid ${isSelected ? SELECTED_BORDER : 'transparent'}`,
           textAlign: 'left',
@@ -69,15 +84,32 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
         role="option"
         aria-selected={isSelected}
       >
-        <Flex gap="xs" align="flex-start" wrap="nowrap">
+        <Flex gap={NOTE_ITEM_STACK_GAP} align="flex-start" wrap="nowrap">
           <div style={{ flex: 1, minWidth: 0 }}>
-            <Text size="md" fw={600} lineClamp={1} title={note.title} mb="xs">
+            <Text
+              size={NOTE_ITEM_TITLE_SIZE}
+              fw={NOTE_ITEM_TITLE_WEIGHT}
+              lineClamp={NOTE_ITEM_LINE_CLAMP_TITLE}
+              title={note.title}
+              mb={NOTE_ITEM_TEXT_MARGIN}
+            >
               {truncatedTitle}
             </Text>
-            <Text size="sm" c="dimmed" lineClamp={2} title={note.content} mb="xs">
+            <Text
+              size={NOTE_ITEM_CONTENT_SIZE}
+              c="dimmed"
+              lineClamp={NOTE_ITEM_LINE_CLAMP_CONTENT}
+              title={note.content}
+              mb={NOTE_ITEM_TEXT_MARGIN}
+            >
               {truncatedContent}
             </Text>
-            <Text size="xs" c="dimmed" lineClamp={1} title={note.updatedAt}>
+            <Text
+              size={NOTE_ITEM_DATE_SIZE}
+              c="dimmed"
+              lineClamp={NOTE_ITEM_LINE_CLAMP_DATE}
+              title={note.updatedAt}
+            >
               {formattedDate}
             </Text>
           </div>
