@@ -1,8 +1,8 @@
 import { type ReactNode, useEffect, useMemo, useReducer } from 'react';
+import { notifications } from '@mantine/notifications';
 import { noteReducer, initialNoteState } from '../model/note-store';
 import { NoteStoreContext } from '../model/use-note-store';
-import { setNotesAction } from '../model/note-store';
-import { noteService } from '../api';
+import { loadNotesAction } from '../model/note-actions';
 
 interface NoteProviderProps {
   children: ReactNode;
@@ -14,10 +14,16 @@ export const NoteProvider = ({ children }: NoteProviderProps) => {
   useEffect(() => {
     const loadNotes = async () => {
       try {
-        const notes = await noteService.getAll();
-        dispatch(setNotesAction(notes));
+        await loadNotesAction(dispatch);
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Не удалось загрузить заметки';
         console.error('Failed to load notes:', error);
+        notifications.show({
+          title: 'Ошибка загрузки',
+          message: errorMessage,
+          color: 'red',
+        });
       }
     };
     loadNotes();
