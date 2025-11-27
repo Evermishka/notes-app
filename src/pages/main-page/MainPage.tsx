@@ -1,13 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppShell, Burger, Group } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { Header } from '@/widgets/header';
 import { Sidebar } from '@/widgets/notes-sidebar';
 import { NoteWorkspace } from '@/widgets/note-workspace';
+import { useNoteDispatch } from '@/entities/note';
 import { SIZES } from '@/shared/config';
 
 export const MainPage = () => {
   const [opened, setOpened] = useState(false);
+  const { actions } = useNoteDispatch();
   const toggleDrawer = () => setOpened((o) => !o);
+
+  useEffect(() => {
+    const loadNotes = async () => {
+      try {
+        await actions.load();
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Не удалось загрузить заметки';
+        console.error('Failed to load notes:', error);
+        notifications.show({
+          title: 'Ошибка загрузки',
+          message: errorMessage,
+          color: 'red',
+        });
+      }
+    };
+    loadNotes();
+  }, [actions]);
 
   return (
     <>

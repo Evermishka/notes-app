@@ -2,14 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { readLocalStorageValue } from '@mantine/hooks';
 import { Text } from '@mantine/core';
 import { SimpleMdeReact } from 'react-simplemde-editor';
-import { useNoteStore, selectSelectedNote } from '@/entities/note';
-import { useNoteCrud } from '@/features/note-crud';
+import { useNoteStore } from '@/entities/note';
 import 'easymde/dist/easymde.min.css';
 
 export const NoteEditor = () => {
-  const { state } = useNoteStore();
-  const selectedNote = selectSelectedNote(state);
-  const { editNote } = useNoteCrud();
+  const { state, actions } = useNoteStore();
   const [content, setContent] = useState<string>('');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mdeRef = useRef<any>(null);
@@ -18,7 +15,7 @@ export const NoteEditor = () => {
   useEffect(() => {
     if (content === '') {
       const initialValue =
-        selectedNote?.content || readLocalStorageValue({ key: 'notes-app' }) || '';
+        state.selectedNote?.content || readLocalStorageValue({ key: 'notes-app' }) || '';
       setContent(initialValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -26,21 +23,21 @@ export const NoteEditor = () => {
 
   // Обновление содержания при смене выбранной заметки
   useEffect(() => {
-    const newContent = selectedNote?.content || '';
+    const newContent = state.selectedNote?.content || '';
     setContent(newContent);
     if (mdeRef.current) {
       mdeRef.current.value(newContent);
     }
-  }, [selectedNote]);
+  }, [state.selectedNote]);
 
   const handleChange = useCallback(
     (value: string) => {
       setContent(value);
-      if (selectedNote) {
-        editNote(selectedNote.id, selectedNote.title, value);
+      if (state.selectedNote) {
+        actions.update(state.selectedNote.id, state.selectedNote.title, value);
       }
     },
-    [editNote, selectedNote]
+    [actions, state.selectedNote]
   );
 
   const options = useMemo(() => {
@@ -55,7 +52,7 @@ export const NoteEditor = () => {
     };
   }, []);
 
-  if (!selectedNote) return <Text>Загрузка редактора...</Text>;
+  if (!state.selectedNote) return <Text>Загрузка редактора...</Text>;
 
   return (
     <div className="note-editor">

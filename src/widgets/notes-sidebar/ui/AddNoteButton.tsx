@@ -2,8 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import { useNoteStore, selectLoading, selectError } from '@/entities/note';
-import { useNoteCrud } from '@/features/note-crud';
+import { useNoteStore } from '@/entities/note';
 import { formatDate } from '@/shared/utils/text-utils';
 import { ERROR_TITLE, ERROR_MESSAGE, ADD_BUTTON_TEXT } from '@/shared/config';
 
@@ -12,16 +11,13 @@ interface AddNoteButtonProps {
 }
 
 export const AddNoteButton: React.FC<AddNoteButtonProps> = ({ onNoteAdded }) => {
-  const { state } = useNoteStore();
-  const loading = selectLoading(state);
-  const error = selectError(state);
-  const { addNote } = useNoteCrud();
+  const { state, actions } = useNoteStore();
 
   useEffect(() => {
-    if (error) {
-      notifications.show({ title: ERROR_TITLE, message: error });
+    if (state.error) {
+      notifications.show({ title: ERROR_TITLE, message: state.error });
     }
-  }, [error]);
+  }, [state.error]);
 
   const handleAdd = useCallback(async (): Promise<void> => {
     const now = new Date();
@@ -29,18 +25,18 @@ export const AddNoteButton: React.FC<AddNoteButtonProps> = ({ onNoteAdded }) => 
     const title = `Новая заметка ${formattedDate}`;
     const content = '';
     try {
-      await addNote(title, content);
+      await actions.create(title, content);
       onNoteAdded?.();
     } catch {
       notifications.show({ title: ERROR_TITLE, message: ERROR_MESSAGE });
     }
-  }, [addNote, onNoteAdded]);
+  }, [actions, onNoteAdded]);
 
   return (
     <Button
       leftSection={<PlusIcon width={16} />}
       onClick={handleAdd}
-      loading={loading}
+      loading={state.loading}
       fullWidth
       p="sm"
       h="40px"

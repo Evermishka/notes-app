@@ -1,24 +1,13 @@
-import { type ReactNode, useEffect, useMemo } from 'react';
-import { AuthContext, useAuthStore, useAuthSelector, useAuthActions } from '../model/auth-store';
+import { type ReactNode, useEffect } from 'react';
+import { AuthContext, useAuthContext } from '../model/auth-store';
 
 type AuthProviderProps = {
   children: ReactNode;
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const store = useAuthStore();
-  const state = useAuthSelector(store);
-  const actions = useAuthActions(store);
-
-  const { checkAuth } = actions;
-
-  const value = useMemo(
-    () => ({
-      state,
-      ...actions,
-    }),
-    [state, actions]
-  );
+  const value = useAuthContext();
+  const { checkAuth } = value;
 
   useEffect(() => {
     checkAuth();

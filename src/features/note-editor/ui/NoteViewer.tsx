@@ -1,14 +1,13 @@
 import { ErrorBoundary } from 'react-error-boundary';
-import { useNoteStore, selectSelectedNote } from '@/entities/note';
+import { useNoteState } from '@/entities/note';
 import { ErrorFallback } from '@/shared/components';
 import { logError } from '@/shared/utils';
 import { NoteRenderer } from './NoteRenderer';
 
 export const NoteViewer = () => {
-  const { state } = useNoteStore();
-  const selectedNote = selectSelectedNote(state);
+  const state = useNoteState();
 
-  if (!selectedNote) {
+  if (!state.selectedNote) {
     return null;
   }
 
@@ -16,7 +15,7 @@ export const NoteViewer = () => {
     <div className="note-viewer">
       <div className="prose prose-sm max-w-none">
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
-          <NoteRenderer content={selectedNote.content} />
+          <NoteRenderer content={state.selectedNote.content} />
         </ErrorBoundary>
       </div>
     </div>
