@@ -1,14 +1,14 @@
-import type { Note } from './types';
+import type { Note, CreateNoteDTO, UpdateNoteDTO } from './types';
+import { noteService } from '../api';
 
-// Actions Constants
-export const NOTE_ACTIONS = {
-  SET_LOADING: 'SET_LOADING',
-  SET_NOTES: 'SET_NOTES',
-  ADD_NOTE: 'ADD_NOTE',
-  UPDATE_NOTE: 'UPDATE_NOTE',
-  REMOVE_NOTE: 'REMOVE_NOTE',
-  SET_SELECT_NOTE: 'SET_SELECT_NOTE',
-  SET_ERROR: 'SET_ERROR',
+// Error Messages
+const ERROR_MESSAGES = {
+  LOAD_NOTES_FAILED: 'Не удалось загрузить заметки',
+  LOAD_NOTE_FAILED: 'Не удалось загрузить заметку',
+  NOTE_NOT_FOUND: 'Заметка не найдена',
+  CREATE_NOTE_FAILED: 'Не удалось добавить заметку',
+  UPDATE_NOTE_FAILED: 'Не удалось изменить заметку',
+  DELETE_NOTE_FAILED: 'Не удалось удалить заметку',
 } as const;
 
 // State Type
@@ -21,13 +21,13 @@ export type NoteState = {
 
 // Action Types
 export type NoteAction =
-  | { type: typeof NOTE_ACTIONS.SET_LOADING; payload: boolean }
-  | { type: typeof NOTE_ACTIONS.SET_NOTES; payload: Note[] }
-  | { type: typeof NOTE_ACTIONS.ADD_NOTE; payload: Note }
-  | { type: typeof NOTE_ACTIONS.UPDATE_NOTE; payload: Note }
-  | { type: typeof NOTE_ACTIONS.REMOVE_NOTE; payload: string }
-  | { type: typeof NOTE_ACTIONS.SET_SELECT_NOTE; payload: Note | null }
-  | { type: typeof NOTE_ACTIONS.SET_ERROR; payload: string | null };
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_NOTES'; payload: Note[] }
+  | { type: 'ADD_NOTE'; payload: Note }
+  | { type: 'UPDATE_NOTE'; payload: Note }
+  | { type: 'REMOVE_NOTE'; payload: string }
+  | { type: 'SELECT_NOTE'; payload: Note | null }
+  | { type: 'SET_ERROR'; payload: string | null };
 
 // Initial State
 export const initialNoteState: NoteState = {
@@ -40,73 +40,171 @@ export const initialNoteState: NoteState = {
 // Reducer
 export function noteReducer(state: NoteState, action: NoteAction): NoteState {
   switch (action.type) {
-    case NOTE_ACTIONS.SET_LOADING:
+    case 'SET_LOADING':
       return { ...state, loading: action.payload };
-    case NOTE_ACTIONS.SET_ERROR:
+    case 'SET_ERROR':
       return { ...state, error: action.payload };
-    case NOTE_ACTIONS.SET_NOTES:
+    case 'SET_NOTES':
       return { ...state, notes: action.payload, error: null };
-    case NOTE_ACTIONS.ADD_NOTE:
+    case 'ADD_NOTE':
       return { ...state, notes: [action.payload, ...state.notes], selectedNote: action.payload };
-    case NOTE_ACTIONS.UPDATE_NOTE:
+    case 'UPDATE_NOTE':
       return {
         ...state,
         notes: state.notes.map((note) => (note.id === action.payload.id ? action.payload : note)),
         selectedNote:
           state.selectedNote?.id === action.payload.id ? action.payload : state.selectedNote,
       };
-    case NOTE_ACTIONS.REMOVE_NOTE:
+    case 'REMOVE_NOTE':
       return {
         ...state,
         notes: state.notes.filter((note) => note.id !== action.payload),
         selectedNote: state.selectedNote?.id === action.payload ? null : state.selectedNote,
       };
-    case NOTE_ACTIONS.SET_SELECT_NOTE:
+    case 'SELECT_NOTE':
       return { ...state, selectedNote: action.payload };
     default:
       return state;
   }
 }
 
-// Action Creators
-export const setLoadingAction = (payload: boolean) => ({
-  type: NOTE_ACTIONS.SET_LOADING,
-  payload,
-});
+// Actions
 
-export const setErrorAction = (payload: string | null) => ({
-  type: NOTE_ACTIONS.SET_ERROR,
-  payload,
-});
+/**
+ * Загрузка всех заметок
+ */
+export const loadNotesAction = async (dispatch: React.Dispatch<NoteAction>): Promise<void> => {
+  try {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
 
-export const setNotesAction = (payload: Note[]) => ({
-  type: NOTE_ACTIONS.SET_NOTES,
-  payload,
-});
+    const notes = await noteService.getAll();
 
-export const addNoteAction = (payload: Note) => ({
-  type: NOTE_ACTIONS.ADD_NOTE,
-  payload,
-});
+    dispatch({ type: 'SET_NOTES', payload: notes });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.LOAD_NOTES_FAILED;
+    dispatch({ type: 'SET_ERROR', payload: errorMessage });
+    throw error;
+  } finally {
+    dispatch({ type: 'SET_LOADING', payload: false });
+  }
+};
 
-export const updateNoteAction = (payload: Note) => ({
-  type: NOTE_ACTIONS.UPDATE_NOTE,
-  payload,
-});
+/**
+ * Загрузка заметки по ID
+ */
+export const loadNoteAction = async (
+  dispatch: React.Dispatch<NoteAction>,
+  id: string
+): Promise<void> => {
+  try {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
 
-export const removeNoteAction = (payload: string) => ({
-  type: NOTE_ACTIONS.REMOVE_NOTE,
-  payload,
-});
+    const note = await noteService.getById(id);
 
-export const selectNoteAction = (payload: Note | null) => ({
-  type: NOTE_ACTIONS.SET_SELECT_NOTE,
-  payload,
-});
+    if (note) {
+      dispatch({ type: 'SELECT_NOTE', payload: note });
+    } else {
+      dispatch({ type: 'SET_ERROR', payload: ERROR_MESSAGES.NOTE_NOT_FOUND });
+      throw new Error(ERROR_MESSAGES.NOTE_NOT_FOUND);
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.LOAD_NOTE_FAILED;
+    dispatch({ type: 'SET_ERROR', payload: errorMessage });
+    throw error;
+  } finally {
+    dispatch({ type: 'SET_LOADING', payload: false });
+  }
+};
 
-// Selectors
-export const selectNotes = (state: NoteState) => state.notes;
-export const selectLoading = (state: NoteState) => state.loading;
-export const selectError = (state: NoteState) => state.error;
-export const selectSelectedNote = (state: NoteState) => state.selectedNote;
-export const selectNotesCount = (state: NoteState) => state.notes.length;
+/**
+ * Создание новой заметки
+ */
+export const createNoteAction = async (
+  dispatch: React.Dispatch<NoteAction>,
+  title: string,
+  content: string
+): Promise<void> => {
+  try {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
+
+    const dto: CreateNoteDTO = { title, content };
+    const newNote = await noteService.create(dto);
+
+    dispatch({ type: 'ADD_NOTE', payload: newNote });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.CREATE_NOTE_FAILED;
+    dispatch({ type: 'SET_ERROR', payload: errorMessage });
+    throw error;
+  } finally {
+    dispatch({ type: 'SET_LOADING', payload: false });
+  }
+};
+
+/**
+ * Обновление заметки
+ */
+export const updateNoteAction = async (
+  dispatch: React.Dispatch<NoteAction>,
+  id: string,
+  title: string,
+  content: string
+): Promise<void> => {
+  try {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
+
+    const dto: UpdateNoteDTO = { title, content };
+    const updatedNote = await noteService.update(id, dto);
+
+    if (updatedNote) {
+      dispatch({ type: 'UPDATE_NOTE', payload: updatedNote });
+    } else {
+      dispatch({ type: 'SET_ERROR', payload: ERROR_MESSAGES.NOTE_NOT_FOUND });
+      throw new Error(ERROR_MESSAGES.NOTE_NOT_FOUND);
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.UPDATE_NOTE_FAILED;
+    dispatch({ type: 'SET_ERROR', payload: errorMessage });
+    throw error;
+  } finally {
+    dispatch({ type: 'SET_LOADING', payload: false });
+  }
+};
+
+/**
+ * Удаление заметки
+ */
+export const deleteNoteAction = async (
+  dispatch: React.Dispatch<NoteAction>,
+  id: string
+): Promise<void> => {
+  try {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
+
+    const success = await noteService.delete(id);
+
+    if (success) {
+      dispatch({ type: 'REMOVE_NOTE', payload: id });
+    } else {
+      dispatch({ type: 'SET_ERROR', payload: ERROR_MESSAGES.NOTE_NOT_FOUND });
+      throw new Error(ERROR_MESSAGES.NOTE_NOT_FOUND);
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.DELETE_NOTE_FAILED;
+    dispatch({ type: 'SET_ERROR', payload: errorMessage });
+    throw error;
+  } finally {
+    dispatch({ type: 'SET_LOADING', payload: false });
+  }
+};
+
+/**
+ * Выбор заметки
+ */
+export const selectNoteAction = (dispatch: React.Dispatch<NoteAction>, note: Note | null): void => {
+  dispatch({ type: 'SELECT_NOTE', payload: note });
+};

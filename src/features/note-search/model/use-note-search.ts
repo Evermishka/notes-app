@@ -1,25 +1,22 @@
 import { useState, useMemo } from 'react';
-import { useNoteStore } from '@/entities/note';
-import { selectNotes } from '@/entities/note';
+import { useNoteState } from '@/entities/note';
 import type { Note } from '@/entities/note';
 
 export const useNoteSearch = () => {
-  const { state } = useNoteStore();
+  const state = useNoteState();
   const [searchQuery, setSearchQuery] = useState<string>('');
-
-  const allNotes = selectNotes(state);
 
   const filteredNotes = useMemo(() => {
     if (!searchQuery.trim()) {
-      return allNotes;
+      return state.notes;
     }
 
     const query = searchQuery.toLowerCase();
-    return allNotes.filter(
+    return state.notes.filter(
       (note) =>
         note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query)
     );
-  }, [allNotes, searchQuery]);
+  }, [state.notes, searchQuery]);
 
   return {
     searchQuery,

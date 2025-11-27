@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
 import { Group, Button, Tooltip, Title, TextInput } from '@mantine/core';
 import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
-import { useNoteStore, selectSelectedNote } from '@/entities/note';
-import { useNoteCrud } from '@/features/note-crud';
+import { useNoteStore } from '@/entities/note';
 import { SIZES } from '@/shared/config';
 
 interface NoteHeaderProps {
@@ -12,9 +11,7 @@ interface NoteHeaderProps {
 }
 
 export const NoteHeader = ({ mode, onModeChange, onDelete }: NoteHeaderProps) => {
-  const { state } = useNoteStore();
-  const selectedNote = selectSelectedNote(state);
-  const { editNote } = useNoteCrud();
+  const { state, actions } = useNoteStore();
 
   const handleEdit = useCallback((): void => {
     onModeChange('edit');
@@ -31,24 +28,24 @@ export const NoteHeader = ({ mode, onModeChange, onDelete }: NoteHeaderProps) =>
   const handleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const newTitle = event.currentTarget.value;
-      if (selectedNote) {
-        editNote(selectedNote.id, newTitle, selectedNote.content);
+      if (state.selectedNote) {
+        actions.update(state.selectedNote.id, newTitle, state.selectedNote.content);
       }
     },
-    [selectedNote, editNote]
+    [state.selectedNote, actions]
   );
 
-  if (!selectedNote) {
+  if (!state.selectedNote) {
     return null;
   }
 
   return (
     <Group justify="space-between" align="center">
-      {mode === 'view' && <Title order={1}>{selectedNote.title}</Title>}
+      {mode === 'view' && <Title order={1}>{state.selectedNote.title}</Title>}
       {mode === 'edit' && (
         <TextInput
-          key={selectedNote.id}
-          defaultValue={selectedNote.title}
+          key={state.selectedNote.id}
+          defaultValue={state.selectedNote.title}
           onChange={handleTitleChange}
           size="xl"
           style={{ flex: 1 }}

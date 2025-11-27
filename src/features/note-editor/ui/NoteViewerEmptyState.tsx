@@ -1,12 +1,11 @@
 import { Text, Stack } from '@mantine/core';
-import { useNoteStore, selectSelectedNote } from '@/entities/note';
+import { useNoteState } from '@/entities/note';
 import { NOTE_EMPTY_VIEW_TEXT, SIZES } from '@/shared/config';
 
 export const NoteViewerEmptyState = () => {
-  const { state } = useNoteStore();
-  const selectedNote = selectSelectedNote(state);
+  const state = useNoteState();
 
-  if (selectedNote === null) {
+  if (state.selectedNote === null) {
     return (
       <Stack
         align="center"

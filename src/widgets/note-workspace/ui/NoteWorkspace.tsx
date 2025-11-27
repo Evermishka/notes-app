@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
 import { Stack } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { useNoteStore, selectSelectedNote } from '@/entities/note';
-import { useNoteCrud } from '@/features/note-crud';
+import { useNoteStore } from '@/entities/note';
 import { useEditorMode } from '@/features/note-editor';
 import { NoteEditor, NoteViewer, NoteViewerEmptyState } from '@/features/note-editor';
 import { useDeleteModal, DeleteConfirm } from '@/features/note-delete';
@@ -15,17 +14,15 @@ import {
 import { NoteHeader } from './NoteHeader';
 
 export const NoteWorkspace = () => {
-  const { state } = useNoteStore();
-  const selectedNote = selectSelectedNote(state);
-  const { removeNote } = useNoteCrud();
+  const { state, actions } = useNoteStore();
   const { mode, setMode } = useEditorMode();
   const { isOpen, openModal, closeModal } = useDeleteModal();
 
   const handleConfirmDelete = useCallback(async (): Promise<void> => {
-    if (!selectedNote) return;
+    if (!state.selectedNote) return;
 
     try {
-      await removeNote(selectedNote.id);
+      await actions.delete(state.selectedNote.id);
       closeModal();
       setMode('view');
       notifications.show({
@@ -40,12 +37,12 @@ export const NoteWorkspace = () => {
         color: 'red',
       });
     }
-  }, [selectedNote, removeNote, closeModal, setMode]);
+  }, [state.selectedNote, actions, closeModal, setMode]);
 
   return (
     <>
-      {!selectedNote && <NoteViewerEmptyState />}
-      {selectedNote && (
+      {!state.selectedNote && <NoteViewerEmptyState />}
+      {state.selectedNote && (
         <Stack gap="md">
           <NoteHeader mode={mode} onModeChange={setMode} onDelete={openModal} />
           {mode === 'view' && <NoteViewer />}
@@ -56,7 +53,7 @@ export const NoteWorkspace = () => {
         isOpen={isOpen}
         onClose={closeModal}
         onConfirm={handleConfirmDelete}
-        noteTitle={selectedNote?.title || ''}
+        noteTitle={state.selectedNote?.title || ''}
       />
     </>
   );
