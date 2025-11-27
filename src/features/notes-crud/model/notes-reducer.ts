@@ -25,9 +25,11 @@ export function notesReducer(state: NotesState, action: NotesAction): NotesState
         notes: state.notes.map((note) => (note.id === action.payload.id ? action.payload : note)),
       };
     case NOTES_ACTIONS.REMOVE_NOTE:
+      // [Очищаем selectedNote если удалённая заметка была выбрана]
       return {
         ...state,
         notes: state.notes.filter((note) => note.id !== action.payload),
+        selectedNote: state.selectedNote?.id === action.payload ? null : state.selectedNote,
       };
     case NOTES_ACTIONS.SET_SELECT_NOTE:
       return { ...state, selectedNote: action.payload };

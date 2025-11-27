@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { Group, Button, Tooltip, Title, TextInput } from '@mantine/core';
 import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { useNotesSelectors } from '@/features/notes-crud/model/use-notes-selectors';
@@ -5,12 +6,13 @@ import { useViewEditorContext } from '../model/use-view-editor-context';
 import { SIZES } from '@/shared/config';
 
 export const NoteHeader = () => {
-  const { mode, setMode } = useViewEditorContext();
+  const { mode, setMode, openDeleteModal } = useViewEditorContext();
   const { currentSelectedNote } = useNotesSelectors();
 
-  if (!currentSelectedNote) {
-    return null;
-  }
+  // [Открытие модального окна подтверждения удаления]
+  const handleDelete = useCallback((): void => {
+    openDeleteModal();
+  }, [openDeleteModal]);
 
   const handleEdit = (): void => {
     setMode('edit');
@@ -20,9 +22,9 @@ export const NoteHeader = () => {
     setMode('view');
   };
 
-  const handleDelete = (): void => {
-    // TODO: реализовать удаление
-  };
+  if (!currentSelectedNote) {
+    return null;
+  }
 
   return (
     <Group justify="space-between" align="center">
