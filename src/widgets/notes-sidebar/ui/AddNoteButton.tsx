@@ -4,7 +4,14 @@ import { notifications } from '@mantine/notifications';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useNoteStore } from '@/entities/note';
 import { formatDate } from '@/shared/utils/text-utils';
-import { ERROR_TITLE, ERROR_MESSAGE, ADD_BUTTON_TEXT } from '@/shared/config';
+import {
+  ERROR_TITLE,
+  ERROR_MESSAGE,
+  ADD_BUTTON_TEXT,
+  ADD_NOTE_BUTTON_HEIGHT,
+  ADD_NOTE_BUTTON_PADDING,
+  ADD_NOTE_BUTTON_ICON_SIZE,
+} from '@/shared/config';
 
 interface AddNoteButtonProps {
   onNoteAdded?: () => void;
@@ -22,7 +29,7 @@ export const AddNoteButton: React.FC<AddNoteButtonProps> = ({ onNoteAdded }) => 
   const handleAdd = useCallback(async (): Promise<void> => {
     const now = new Date();
     const formattedDate = formatDate(now);
-    const title = `Новая заметка ${formattedDate}`;
+    const title = `${ADD_BUTTON_TEXT} ${formattedDate}`;
     const content = '';
     try {
       await actions.create(title, content);
@@ -34,12 +41,14 @@ export const AddNoteButton: React.FC<AddNoteButtonProps> = ({ onNoteAdded }) => 
 
   return (
     <Button
-      leftSection={<PlusIcon width={16} />}
+      leftSection={
+        <PlusIcon width={ADD_NOTE_BUTTON_ICON_SIZE} height={ADD_NOTE_BUTTON_ICON_SIZE} />
+      }
       onClick={handleAdd}
       loading={state.loading}
       fullWidth
-      p="sm"
-      h="40px"
+      p={ADD_NOTE_BUTTON_PADDING}
+      h={ADD_NOTE_BUTTON_HEIGHT}
     >
       {ADD_BUTTON_TEXT}
     </Button>

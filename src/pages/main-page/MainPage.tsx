@@ -5,7 +5,7 @@ import { Header } from '@/widgets/header';
 import { Sidebar } from '@/widgets/notes-sidebar';
 import { NoteWorkspace } from '@/widgets/note-workspace';
 import { useNoteDispatch } from '@/entities/note';
-import { SIZES } from '@/shared/config';
+import { SIZES, NOTES_LOAD_ERROR_TITLE, NOTES_LOAD_ERROR_MESSAGE } from '@/shared/config';
 
 export const MainPage = () => {
   const [opened, setOpened] = useState(false);
@@ -17,11 +17,10 @@ export const MainPage = () => {
       try {
         await actions.load();
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Не удалось загрузить заметки';
+        const errorMessage = error instanceof Error ? error.message : NOTES_LOAD_ERROR_MESSAGE;
         console.error('Failed to load notes:', error);
         notifications.show({
-          title: 'Ошибка загрузки',
+          title: NOTES_LOAD_ERROR_TITLE,
           message: errorMessage,
           color: 'red',
         });

@@ -2,6 +2,16 @@ import { useRef, useCallback, useEffect } from 'react';
 import { Stack, Text, Skeleton, Alert, ScrollArea } from '@mantine/core';
 import { useNoteStore } from '@/entities/note';
 import { useKeyboardNavigation } from '@/shared/hooks';
+import {
+  ERROR_TITLE,
+  NOTES_LIST_EMPTY_TEXT,
+  NOTES_LIST_SKELETON_COUNT,
+  NOTES_LIST_SKELETON_HEIGHT,
+  NOTES_LIST_SCROLL_HEIGHT,
+  NOTES_LIST_ITEMS_GAP,
+  NOTES_LIST_EMPTY_STACK_GAP,
+  NOTES_LIST_EMPTY_PADDING,
+} from '@/shared/config';
 import { NoteItem } from './NoteItem';
 import type { Note } from '@/entities/note';
 
@@ -43,9 +53,9 @@ export const NotesList = ({ filteredNotes }: NotesListProps) => {
 
   if (state.loading) {
     return (
-      <Stack gap="xs">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <Skeleton key={index} height={60} />
+      <Stack gap={NOTES_LIST_ITEMS_GAP}>
+        {Array.from({ length: NOTES_LIST_SKELETON_COUNT }).map((_, index) => (
+          <Skeleton key={index} height={NOTES_LIST_SKELETON_HEIGHT} />
         ))}
       </Stack>
     );
@@ -53,7 +63,7 @@ export const NotesList = ({ filteredNotes }: NotesListProps) => {
 
   if (state.error) {
     return (
-      <Alert title="Ошибка" color="red">
+      <Alert title={ERROR_TITLE} color="red">
         {state.error}
       </Alert>
     );
@@ -61,20 +71,25 @@ export const NotesList = ({ filteredNotes }: NotesListProps) => {
 
   if (state.notes.length === 0) {
     return (
-      <Stack align="center" justify="center" gap="md" py="xl">
-        <Text c="dimmed">Нет заметок</Text>
+      <Stack
+        align="center"
+        justify="center"
+        gap={NOTES_LIST_EMPTY_STACK_GAP}
+        py={NOTES_LIST_EMPTY_PADDING}
+      >
+        <Text c="dimmed">{NOTES_LIST_EMPTY_TEXT}</Text>
       </Stack>
     );
   }
 
   return (
     <ScrollArea
-      h="calc(100vh - 200px)"
+      h={NOTES_LIST_SCROLL_HEIGHT}
       ref={scrollAreaRef}
       role="listbox"
       aria-activedescendant={state.selectedNote?.id}
     >
-      <Stack gap="xs">
+      <Stack gap={NOTES_LIST_ITEMS_GAP}>
         {filteredNotes.map((note: Note, index) => (
           <NoteItem
             id={note.id}

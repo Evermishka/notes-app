@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { TextInput } from '@mantine/core';
+import { SEARCH_PLACEHOLDER, SEARCH_ARIA_LABEL } from '@/shared/config';
 import { useDebouncedCallback } from '@mantine/hooks';
 
 interface SearchBarProps {
@@ -24,6 +25,11 @@ export const SearchBar = ({ onSearchChange }: SearchBarProps) => {
   );
 
   return (
-    <TextInput placeholder="Поиск" value={searchInput} onChange={handleChange} aria-label="Поиск" />
+    <TextInput
+      placeholder={SEARCH_PLACEHOLDER}
+      value={searchInput}
+      onChange={handleChange}
+      aria-label={SEARCH_ARIA_LABEL}
+    />
   );
 };

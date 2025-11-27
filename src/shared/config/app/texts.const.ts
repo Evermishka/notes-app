@@ -1,3 +1,6 @@
+export const NOTES_LOAD_ERROR_TITLE = 'Ошибка загрузки';
+export const NOTES_LOAD_ERROR_MESSAGE = 'Не удалось загрузить заметки';
+export const NOTES_LIST_EMPTY_TEXT = 'Нет заметок';
 export const ADD_BUTTON_TEXT = 'Новая заметка';
 export const ERROR_TITLE = 'Ошибка';
 export const ERROR_MESSAGE = 'Не удалось добавить заметку';
