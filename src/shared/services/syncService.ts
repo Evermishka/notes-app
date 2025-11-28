@@ -204,6 +204,51 @@ class SyncService {
   private notifyNoteChange(noteId: string): void {
     this.noteListeners.forEach((listener) => listener(noteId));
   }
+
+  /**
+   * Загружает все заметки из Firebase и обновляет локальную базу данных
+   * Вызывается после авторизации для синхронизации данных
+   */
+  async downloadFromFirebase(): Promise<void> {
+    try {
+      await this.ensureReady();
+      console.warn('Downloading notes from Firebase...');
+
+      // Загружаем все заметки из Firebase
+      const firebaseNotes = await firebaseService.fetchNotes();
+
+      // Обновляем локальную базу данных
+      for (const firebaseNote of firebaseNotes) {
+        const existingLocal = await db.notes.get(firebaseNote.id);
+
+        if (!existingLocal) {
+          // Новая заметка из Firebase
+          const storedNote = {
+            id: firebaseNote.id,
+            title: firebaseNote.title,
+            content: firebaseNote.content,
+            createdAt: firebaseNote.createdAt,
+            updatedAt: firebaseNote.updatedAt,
+            synced: true,
+          };
+          await db.notes.add(storedNote);
+        } else if (new Date(firebaseNote.updatedAt) > new Date(existingLocal.updatedAt)) {
+          // Firebase версия новее
+          await db.notes.update(firebaseNote.id, {
+            title: firebaseNote.title,
+            content: firebaseNote.content,
+            updatedAt: firebaseNote.updatedAt,
+            synced: true,
+          });
+        }
+      }
+
+      console.warn(`Downloaded ${firebaseNotes.length} notes from Firebase`);
+    } catch (error) {
+      console.error('Failed to download from Firebase:', error);
+      throw error;
+    }
+  }
 }
 
 export const syncService = SyncService.getInstance();
