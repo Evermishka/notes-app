@@ -1,6 +1,7 @@
 import React, { useCallback, forwardRef } from 'react';
 import { Flex, Text, UnstyledButton } from '@mantine/core';
 import type { Note } from '@/entities/note';
+import { getNoteSyncMeta } from '@/entities/note/model/sync-status';
 import { truncateTitle, truncateContent, formatDate } from '@/shared/utils';
 import {
   SELECTED_BACKGROUND,
@@ -58,6 +59,7 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
     const truncatedContent = truncateContent(note.content);
 
     const formattedDate = formatDate(note.updatedAt);
+    const { text: statusText, color: statusColor } = getNoteSyncMeta(note);
 
     return (
       <UnstyledButton
@@ -111,6 +113,9 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
               title={note.updatedAt}
             >
               {formattedDate}
+            </Text>
+            <Text size="xs" c={statusColor} lineClamp={1}>
+              {statusText}
             </Text>
           </div>
         </Flex>

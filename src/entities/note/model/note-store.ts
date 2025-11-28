@@ -1,6 +1,6 @@
 import type React from 'react';
 import type { Note } from './types';
-import { firebaseService } from '@/services/firebaseService';
+import { noteService } from '@/entities/note/api/note-service';
 
 // Error Messages
 const ERROR_MESSAGES = {
@@ -79,7 +79,7 @@ export const loadNotesAction = async (dispatch: React.Dispatch<NoteAction>): Pro
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
-    const notes = await firebaseService.fetchNotes();
+    const notes = await noteService.getAll();
 
     dispatch({ type: 'SET_NOTES', payload: notes });
   } catch (error) {
@@ -102,7 +102,7 @@ export const loadNoteAction = async (
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
-    const note = await firebaseService.getNoteById(id);
+    const note = await noteService.getById(id);
 
     if (note) {
       dispatch({ type: 'SELECT_NOTE', payload: note });
@@ -131,7 +131,7 @@ export const createNoteAction = async (
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
-    const newNote = await firebaseService.createNote(title, content);
+    const newNote = await noteService.create({ title, content });
 
     dispatch({ type: 'ADD_NOTE', payload: newNote });
   } catch (error) {
@@ -155,7 +155,11 @@ export const updateNoteAction = async (
   try {
     dispatch({ type: 'SET_ERROR', payload: null });
 
-    const updatedNote = await firebaseService.updateNote(id, title, content);
+    const updatedNote = await noteService.update(id, { title, content });
+
+    if (!updatedNote) {
+      throw new Error(ERROR_MESSAGES.NOTE_NOT_FOUND);
+    }
 
     dispatch({ type: 'UPDATE_NOTE', payload: updatedNote });
   } catch (error) {
@@ -176,7 +180,10 @@ export const deleteNoteAction = async (
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
-    await firebaseService.deleteNote(id);
+    const deleted = await noteService.delete(id);
+    if (!deleted) {
+      throw new Error(ERROR_MESSAGES.NOTE_NOT_FOUND);
+    }
     dispatch({ type: 'REMOVE_NOTE', payload: id });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.DELETE_NOTE_FAILED;

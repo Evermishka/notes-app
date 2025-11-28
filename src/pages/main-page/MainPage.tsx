@@ -7,6 +7,7 @@ import { NoteWorkspace } from '@/widgets/note-workspace';
 import { useNoteStore } from '@/entities/note';
 import { SIZES, NOTES_LOAD_ERROR_TITLE, NOTES_LOAD_ERROR_MESSAGE } from '@/shared/config';
 import { useAuth } from '@/features/auth';
+import { NoteEditorModeProvider } from '@/features/note-editor';
 
 export const MainPage = () => {
   const [opened, setOpened] = useState(false);
@@ -47,7 +48,7 @@ export const MainPage = () => {
   }, [state.error, state.notes.length]);
 
   return (
-    <>
+    <NoteEditorModeProvider>
       <AppShell
         padding="md"
         header={{ height: SIZES.headerHeight }}
@@ -72,6 +73,6 @@ export const MainPage = () => {
           <NoteWorkspace />
         </AppShell.Main>
       </AppShell>
-    </>
+    </NoteEditorModeProvider>
   );
 };

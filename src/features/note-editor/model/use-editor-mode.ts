@@ -1,27 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useContext } from 'react';
+import { EditorModeContext, type EditorModeContextValue } from './editor-mode-context';
 
-export type ViewMode = 'view' | 'edit';
-
-export const useEditorMode = () => {
-  const [mode, setMode] = useState<ViewMode>('view');
-
-  const toggleMode = useCallback(() => {
-    setMode((prev) => (prev === 'view' ? 'edit' : 'view'));
-  }, []);
-
-  const setViewMode = useCallback(() => {
-    setMode('view');
-  }, []);
-
-  const setEditMode = useCallback(() => {
-    setMode('edit');
-  }, []);
-
-  return {
-    mode,
-    setMode,
-    toggleMode,
-    setViewMode,
-    setEditMode,
-  };
+export const useEditorMode = (): EditorModeContextValue => {
+  const context = useContext(EditorModeContext);
+  if (!context) {
+    throw new Error('useEditorMode must be used within NoteEditorModeProvider');
+  }
+  return context;
 };

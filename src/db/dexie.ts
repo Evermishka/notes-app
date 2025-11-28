@@ -1,5 +1,4 @@
 import Dexie from 'dexie';
-import { testNotes } from '@/entities/note/api/test-notes';
 import type { Note } from '@/entities/note/model/types';
 
 export type StoredNote = Note & {
@@ -36,14 +35,6 @@ export const ensureDbReady = async (): Promise<void> => {
   if (!db.isOpen()) {
     await db.open();
   }
-  await seedNotes();
-};
-
-export const seedNotes = async (): Promise<void> => {
-  const count = await db.notes.count();
-  if (count > 0) return;
-  const records: StoredNote[] = testNotes.map((note) => ({ ...note, synced: true }));
-  await db.notes.bulkAdd(records);
 };
 
 export const resetNotesStore = (): Promise<void> => db.notes.clear();
