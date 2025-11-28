@@ -1,7 +1,6 @@
-import { createContext, useState, useCallback, useMemo, useContext, useRef } from 'react';
-import { useLocalStorage } from '@mantine/hooks';
-import type { User } from '@/entities/user';
-import { AuthService } from '../api';
+import { createContext, useState, useCallback, useMemo, useContext, useEffect } from 'react';
+import type { User } from '@/db';
+import { firebaseService, FirebaseServiceError } from '@/services/firebaseService';
 import type { AuthError, AuthState, AuthContextType } from './types';
 
 // Context
@@ -23,31 +22,26 @@ export const useAuth = (): AuthContextType => {
 
 // Хук для создания значения контекста (используется в AuthProvider)
 export const useAuthContext = () => {
-  const [tokenStorage, setTokenStorage, removeTokenStorage] = useLocalStorage({
-    key: 'authToken',
-  });
-
-  const [userStorage, setUserStorage, removeUserStorage] = useLocalStorage({
-    key: 'authUser',
-  });
-
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<AuthError | null>(null);
-  const authServiceRef = useRef(new AuthService());
 
-  // State
-  const getCurrentUser = useCallback((): User | null => {
-    if (!userStorage) return null;
-    try {
-      return JSON.parse(userStorage) as User;
-    } catch (error) {
-      console.error('Не удалось распарсить пользователя из localStorage:', error);
-      return null;
-    }
-  }, [userStorage]);
+  useEffect(() => {
+    const unsubscribe = firebaseService.onAuthStateChanged(
+      ({ user: nextUser, token: nextToken, error }) => {
+        setUser(nextUser);
+        setToken(nextToken);
+        if (error) {
+          setError(mapAuthError(error));
+        } else {
+          setError(null);
+        }
+      }
+    );
+    return unsubscribe;
+  }, []);
 
-  const user = getCurrentUser();
-  const token = tokenStorage || null;
   const isAuthenticated = Boolean(token && user);
 
   const state: AuthState = useMemo(
@@ -62,47 +56,52 @@ export const useAuthContext = () => {
   );
 
   // Actions
-  const login = useCallback(
-    async (email: string, password: string): Promise<void> => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        // Валидация происходит на уровне UI формы
-        // Здесь мы просто делаем API call
-        const { user, token } = await authServiceRef.current.login(email, password);
-
-        setUserStorage(JSON.stringify(user));
-        setTokenStorage(token);
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Ошибка при login:', err);
-        if (err instanceof Error && err.message === 'WRONG_CREDENTIALS') {
-          setError('WRONG_CREDENTIALS');
-        } else {
-          setError('UNKNOWN_ERROR');
-        }
-        setIsLoading(false);
-      }
-    },
-    [setUserStorage, setTokenStorage]
-  );
-
-  const logout = useCallback(() => {
-    removeTokenStorage();
-    removeUserStorage();
+  const login = useCallback(async (email: string, password: string): Promise<void> => {
+    setIsLoading(true);
     setError(null);
-  }, [removeTokenStorage, removeUserStorage]);
 
-  const checkAuth = useCallback(() => {
-    const token = tokenStorage;
-    const user = getCurrentUser();
-
-    if ((token && !user) || (!token && user)) {
-      removeTokenStorage();
-      removeUserStorage();
+    try {
+      const result = await firebaseService.login(email, password);
+      setUser(result.user);
+      setToken(result.token);
+    } catch (err) {
+      setError(mapAuthError(err));
+    } finally {
+      setIsLoading(false);
     }
-  }, [tokenStorage, getCurrentUser, removeTokenStorage, removeUserStorage]);
+  }, []);
+
+  const logout = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await firebaseService.logout();
+      setUser(null);
+      setToken(null);
+      setError(null);
+    } catch (err) {
+      setError(mapAuthError(err));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const checkAuth = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await firebaseService.checkAuth();
+      setError(null);
+      setUser(result?.user ?? null);
+      setToken(result?.token ?? null);
+    } catch (err) {
+      setError(mapAuthError(err));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -118,4 +117,31 @@ export const useAuthContext = () => {
     }),
     [state, login, logout, checkAuth, clearError]
   );
+};
+
+const mapAuthError = (error: unknown): AuthError => {
+  if (error instanceof FirebaseServiceError) {
+    switch (error.code) {
+      case 'auth/invalid-email':
+        return 'INVALID_EMAIL';
+      case 'auth/wrong-password':
+        return 'INVALID_PASSWORD';
+      case 'auth/user-not-found':
+      case 'auth/user-disabled':
+      case 'auth/invalid-credential':
+      case 'auth/expired-action-code':
+      case 'auth/too-many-requests':
+        return 'WRONG_CREDENTIALS';
+      case 'auth/network-request-failed':
+        return 'NETWORK_ERROR';
+      default:
+        return 'UNKNOWN_ERROR';
+    }
+  }
+
+  if (error instanceof Error && error.message === 'EMPTY_FIELDS') {
+    return 'EMPTY_FIELDS';
+  }
+
+  return 'UNKNOWN_ERROR';
 };

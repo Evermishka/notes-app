@@ -1,10 +1,11 @@
-import type { User } from '@/entities/user';
+import type { User } from '@/db';
 
 export type AuthError =
   | 'INVALID_EMAIL'
   | 'INVALID_PASSWORD'
   | 'EMPTY_FIELDS'
   | 'WRONG_CREDENTIALS'
+  | 'NETWORK_ERROR'
   | 'STORAGE_ERROR'
   | 'UNKNOWN_ERROR';
 
@@ -24,7 +25,7 @@ export type AuthState = {
 export type AuthContextType = {
   state: AuthState;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  checkAuth: () => void;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
   clearError: () => void;
 };
