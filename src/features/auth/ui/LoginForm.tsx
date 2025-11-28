@@ -35,7 +35,7 @@ export const LoginForm = () => {
         return value.length < PASSWORD_MIN_LENGTH ? VALIDATION_MESSAGES.PASSWORD_TOO_SHORT : null;
       },
     },
-    validateInputOnBlur: true,
+    validateInputOnChange: true,
   });
 
   useEffect(() => {
@@ -98,7 +98,13 @@ export const LoginForm = () => {
           type="submit"
           fullWidth
           loading={state.isLoading}
-          disabled={!form.isValid() || state.isLoading}
+          disabled={
+            !form.values.email ||
+            !form.values.password ||
+            !!form.errors.email ||
+            !!form.errors.password ||
+            state.isLoading
+          }
           mt="md"
         >
           Войти
