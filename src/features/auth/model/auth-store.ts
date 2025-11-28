@@ -1,6 +1,6 @@
 import { createContext, useState, useCallback, useMemo, useContext, useEffect } from 'react';
-import type { User } from '@/db';
-import { firebaseService, FirebaseServiceError } from '@/services/firebaseService';
+import type { User } from '@/shared/db';
+import { firebaseService, FirebaseServiceError } from '@/shared/services/firebaseService';
 import type { AuthError, AuthState, AuthContextType } from './types';
 
 // Context

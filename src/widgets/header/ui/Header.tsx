@@ -16,7 +16,7 @@ import {
   HEADER_AUTH_BUTTON_SIZE,
   HEADER_ICON_SIZE,
 } from '@/shared/config';
-import { useSyncStatus } from '@/services/syncService';
+import { useSyncStatus } from '@/shared/services/syncService';
 
 export const Header = () => {
   const navigate = useNavigate();

@@ -1,3 +1,4 @@
+export * from './EditorModeProvider';
 export * from './NoteEditor';
 export * from './NoteViewer';
 export * from './NoteRenderer';

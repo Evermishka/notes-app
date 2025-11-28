@@ -12,7 +12,7 @@ import {
 } from './note-store';
 import type { Note } from './types';
 import { noteService } from '@/entities/note/api';
-import { syncService } from '@/services/syncService';
+import { syncService } from '@/shared/services/syncService';
 
 export type NoteActions = {
   load: () => Promise<void>;

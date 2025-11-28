@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Note } from '@/entities/note/model/types';
-import { db, ensureDbReady, type SyncAction, type SyncQueueRecord } from '@/db';
-import { firebaseService } from '@/services/firebaseService';
+import { db, ensureDbReady, type SyncAction, type SyncQueueRecord } from '@/shared/db';
+import { firebaseService } from '@/shared/services/firebaseService';
 
 export type SyncState = {
   online: boolean;
