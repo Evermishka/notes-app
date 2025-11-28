@@ -15,7 +15,7 @@ import { NoteHeader } from './NoteHeader';
 
 export const NoteWorkspace = () => {
   const { state, actions } = useNoteStore();
-  const { mode, setMode } = useEditorMode();
+  const { state: editorState, setMode } = useEditorMode();
   const { isOpen, openModal, closeModal } = useDeleteModal();
 
   const handleConfirmDelete = useCallback(async (): Promise<void> => {
@@ -44,9 +44,9 @@ export const NoteWorkspace = () => {
       {!state.selectedNote && <NoteViewerEmptyState />}
       {state.selectedNote && (
         <Stack gap="md">
-          <NoteHeader mode={mode} onModeChange={setMode} onDelete={openModal} />
-          {mode === 'view' && <NoteViewer />}
-          {mode === 'edit' && <NoteEditor />}
+          <NoteHeader mode={editorState.mode} onModeChange={setMode} onDelete={openModal} />
+          {editorState.mode === 'view' && <NoteViewer />}
+          {editorState.mode === 'edit' && <NoteEditor />}
         </Stack>
       )}
       <DeleteConfirm

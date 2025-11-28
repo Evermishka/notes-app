@@ -1,7 +1,7 @@
 import type { Note, CreateNoteDTO, UpdateNoteDTO } from '../model/types';
-import { db, ensureDbReady } from '@/db';
-import type { StoredNote, SyncQueueRecord } from '@/db';
-import { syncService } from '@/services/syncService';
+import { db, ensureDbReady } from '@/shared/db';
+import type { StoredNote, SyncQueueRecord } from '@/shared/db';
+import { syncService } from '@/shared/services/syncService';
 
 class NoteService {
   private static instance: NoteService;

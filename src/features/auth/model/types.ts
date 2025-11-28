@@ -1,4 +1,4 @@
-import type { User } from '@/db';
+import type { User } from '@/shared/db';
 
 export type AuthError =
   | 'INVALID_EMAIL'

@@ -18,7 +18,7 @@ import {
   type QueryDocumentSnapshot,
   where,
 } from 'firebase/firestore';
-import { getFirebaseAuth, getFirebaseFirestore } from '@/services/firebase';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/shared/services/firebase';
 import {
   type Auth,
   type User as FirebaseAuthUser,
@@ -27,7 +27,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { type Note } from '@/entities/note/model/types';
-import type { FirestoreNote, SyncQueueRecord, User } from '@/db';
+import type { FirestoreNote, SyncQueueRecord, User } from '@/shared/db';
 
 class FirebaseServiceError extends Error {
   public readonly code?: string;
