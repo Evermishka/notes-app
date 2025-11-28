@@ -6,21 +6,29 @@ import { Sidebar } from '@/widgets/notes-sidebar';
 import { NoteWorkspace } from '@/widgets/note-workspace';
 import { useNoteStore } from '@/entities/note';
 import { SIZES, NOTES_LOAD_ERROR_TITLE, NOTES_LOAD_ERROR_MESSAGE } from '@/shared/config';
+import { useAuth } from '@/features/auth';
 
 export const MainPage = () => {
   const [opened, setOpened] = useState(false);
   const { state, actions } = useNoteStore();
+  const {
+    state: { isAuthenticated },
+  } = useAuth();
   const toggleDrawer = () => setOpened((o) => !o);
   const lastErrorRef = useRef<string | null>(null);
   const hasLoadedRef = useRef(false);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      hasLoadedRef.current = false;
+      return;
+    }
     if (hasLoadedRef.current) return;
     hasLoadedRef.current = true;
     void actions.load().catch((error) => {
       console.error('Failed to load notes:', error);
     });
-  }, [actions]);
+  }, [actions, isAuthenticated]);
 
   useEffect(() => {
     if (!state.error) {
