@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useMemo } from 'react';
+import { createContext, useContext, useReducer, useMemo, useEffect } from 'react';
 import type { NoteState, NoteAction } from './note-store';
 import {
   noteReducer,
@@ -11,6 +11,8 @@ import {
   selectNoteAction,
 } from './note-store';
 import type { Note } from './types';
+import { noteService } from '@/entities/note/api';
+import { syncService } from '@/services/syncService';
 
 export type NoteActions = {
   load: () => Promise<void>;
@@ -68,6 +70,21 @@ export const useNoteContext = () => {
     }),
     [dispatch, actions]
   );
+
+  useEffect(() => {
+    let isMounted = true;
+    const unsubscribe = syncService.subscribeNoteChange(async (noteId) => {
+      if (!isMounted) return;
+      const updatedNote = await noteService.getById(noteId);
+      if (updatedNote && isMounted) {
+        dispatch({ type: 'UPDATE_NOTE', payload: updatedNote });
+      }
+    });
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, [dispatch]);
 
   return { state, dispatchValue };
 };

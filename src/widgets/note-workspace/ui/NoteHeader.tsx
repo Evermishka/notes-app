@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
-import { Group, Button, Tooltip, Title, TextInput } from '@mantine/core';
+import { Group, Button, Tooltip, Title, Text, TextInput } from '@mantine/core';
 import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { useNoteStore } from '@/entities/note';
 import { SIZES } from '@/shared/config';
+import { getNoteSyncMeta } from '@/entities/note/model/sync-status';
 
 interface NoteHeaderProps {
   mode: 'view' | 'edit';
@@ -39,18 +40,35 @@ export const NoteHeader = ({ mode, onModeChange, onDelete }: NoteHeaderProps) =>
     return null;
   }
 
+  const selectedNote = state.selectedNote;
+  const { text: statusMessage, color: statusColor } = getNoteSyncMeta(selectedNote);
+
   return (
     <Group justify="space-between" align="center">
-      {mode === 'view' && <Title order={1}>{state.selectedNote.title}</Title>}
-      {mode === 'edit' && (
-        <TextInput
-          key={state.selectedNote.id}
-          defaultValue={state.selectedNote.title}
-          onChange={handleTitleChange}
-          size="xl"
-          style={{ flex: 1 }}
-        />
-      )}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {mode === 'view' && (
+          <>
+            <Title order={1}>{selectedNote.title}</Title>
+            <Text size="sm" c={statusColor}>
+              {statusMessage}
+            </Text>
+          </>
+        )}
+        {mode === 'edit' && (
+          <>
+            <TextInput
+              key={selectedNote.id}
+              defaultValue={selectedNote.title}
+              onChange={handleTitleChange}
+              size="xl"
+              style={{ flex: 1 }}
+            />
+            <Text size="sm" c={statusColor}>
+              {statusMessage}
+            </Text>
+          </>
+        )}
+      </div>
       <Group gap="xs">
         {mode === 'view' && (
           <Tooltip label="Редактировать">

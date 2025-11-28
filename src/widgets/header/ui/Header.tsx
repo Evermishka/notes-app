@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth';
-import { Group, Button, Text, Box } from '@mantine/core';
+import { Badge, Group, Button, Text, Box } from '@mantine/core';
 import {
   ArrowLeftEndOnRectangleIcon,
   ArrowRightStartOnRectangleIcon,
@@ -16,6 +16,7 @@ import {
   HEADER_AUTH_BUTTON_SIZE,
   HEADER_ICON_SIZE,
 } from '@/shared/config';
+import { useSyncStatus } from '@/services/syncService';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -31,6 +32,13 @@ export const Header = () => {
   }, [navigate]);
 
   const isAuthenticated = state.isAuthenticated;
+  const syncStatus = useSyncStatus();
+  const shouldShowQueueBadge = syncStatus.queueLength > 0 || syncStatus.processing;
+  const queueBadgeLabel = syncStatus.processing ? 'Синхр.' : 'Изменения';
+  const queueBadgeTitle = syncStatus.processing
+    ? 'Синхронизация выполняется'
+    : `В очереди ${syncStatus.queueLength}`;
+  const queueBadgeColor = syncStatus.processing ? 'yellow' : 'gray';
 
   return (
     <Group justify="space-between" align="center" px="md" py="sm" style={{ flexGrow: '1' }}>
@@ -51,41 +59,64 @@ export const Header = () => {
         </Text>
       </Group>
 
-      {/* Правая часть: кнопки авторизации */}
-      <Group gap="xs">
-        {isAuthenticated ? (
-          <Button
-            variant={HEADER_AUTH_BUTTON_VARIANT.logout}
-            size={HEADER_AUTH_BUTTON_SIZE}
-            leftSection={
-              <ArrowRightStartOnRectangleIcon
-                width={HEADER_ICON_SIZE}
-                height={HEADER_ICON_SIZE}
-                aria-hidden="true"
-              />
-            }
-            onClick={handleLogout}
-            aria-label={HEADER_AUTH_BUTTON_ARIA.logout}
+      <Group align="center" spacing="xs">
+        <Group align="center" spacing={2} style={{ flexWrap: 'nowrap', whiteSpace: 'nowrap' }}>
+          <Badge
+            color={syncStatus.online ? 'green' : 'red'}
+            variant="filled"
+            size="xs"
+            sx={{ textTransform: 'none' }}
           >
-            {HEADER_AUTH_BUTTON_TEXT.logout}
-          </Button>
-        ) : (
-          <Button
-            variant={HEADER_AUTH_BUTTON_VARIANT.login}
-            size={HEADER_AUTH_BUTTON_SIZE}
-            leftSection={
-              <ArrowLeftEndOnRectangleIcon
-                width={HEADER_ICON_SIZE}
-                height={HEADER_ICON_SIZE}
-                aria-hidden="true"
-              />
-            }
-            onClick={handleLogin}
-            aria-label={HEADER_AUTH_BUTTON_ARIA.login}
-          >
-            {HEADER_AUTH_BUTTON_TEXT.login}
-          </Button>
-        )}
+            {syncStatus.online ? 'Онлайн' : 'Офлайн'}
+          </Badge>
+          {shouldShowQueueBadge && (
+            <Badge
+              color={queueBadgeColor}
+              variant="light"
+              size="xs"
+              title={queueBadgeTitle}
+              sx={{ textTransform: 'none' }}
+            >
+              {queueBadgeLabel}
+            </Badge>
+          )}
+        </Group>
+        {/* Правая часть: кнопки авторизации */}
+        <Group gap="xs">
+          {isAuthenticated ? (
+            <Button
+              variant={HEADER_AUTH_BUTTON_VARIANT.logout}
+              size={HEADER_AUTH_BUTTON_SIZE}
+              leftSection={
+                <ArrowRightStartOnRectangleIcon
+                  width={HEADER_ICON_SIZE}
+                  height={HEADER_ICON_SIZE}
+                  aria-hidden="true"
+                />
+              }
+              onClick={handleLogout}
+              aria-label={HEADER_AUTH_BUTTON_ARIA.logout}
+            >
+              {HEADER_AUTH_BUTTON_TEXT.logout}
+            </Button>
+          ) : (
+            <Button
+              variant={HEADER_AUTH_BUTTON_VARIANT.login}
+              size={HEADER_AUTH_BUTTON_SIZE}
+              leftSection={
+                <ArrowLeftEndOnRectangleIcon
+                  width={HEADER_ICON_SIZE}
+                  height={HEADER_ICON_SIZE}
+                  aria-hidden="true"
+                />
+              }
+              onClick={handleLogin}
+              aria-label={HEADER_AUTH_BUTTON_ARIA.login}
+            >
+              {HEADER_AUTH_BUTTON_TEXT.login}
+            </Button>
+          )}
+        </Group>
       </Group>
     </Group>
   );

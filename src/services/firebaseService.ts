@@ -8,6 +8,7 @@ import {
   getDocs,
   query,
   serverTimestamp,
+  setDoc,
   Timestamp,
   updateDoc,
   type CollectionReference,
@@ -26,7 +27,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { type Note } from '@/entities/note/model/types';
-import type { FirestoreNote, User } from '@/db';
+import type { FirestoreNote, SyncQueueRecord, User } from '@/db';
 
 class FirebaseServiceError extends Error {
   public readonly code?: string;
@@ -199,6 +200,36 @@ class FirebaseService {
     } catch (error) {
       this.handleError('Не удалось удалить заметку.', error);
     }
+  }
+
+  async syncNoteRecord(record: SyncQueueRecord): Promise<void> {
+    const userId = this.requireCurrentUserId(
+      'Не удалось синхронизировать заметку без авторизации.'
+    );
+    const noteRef = doc(this.firestore, 'notes', record.noteId) as DocumentReference<FirestoreNote>;
+
+    if (record.action === 'delete') {
+      await deleteDoc(noteRef);
+      return;
+    }
+
+    const payload = record.payload;
+    if (!payload || typeof payload.title !== 'string' || typeof payload.content !== 'string') {
+      throw new FirebaseServiceError(
+        'Недостаточно данных для синхронизации заметки.',
+        'notes/missing-payload'
+      );
+    }
+
+    const firestorePayload: FirestoreNote = {
+      userId,
+      title: payload.title,
+      content: payload.content,
+      createdAt: payload.createdAt ?? new Date().toISOString(),
+      updatedAt: payload.updatedAt ?? new Date().toISOString(),
+    };
+
+    await setDoc(noteRef, firestorePayload, { merge: record.action === 'update' });
   }
 
   private toNote(
