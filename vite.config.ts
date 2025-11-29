@@ -19,7 +19,6 @@ export default defineConfig({
       '@widgets': path.resolve(__dirname, './src/widgets'),
       '@pages': path.resolve(__dirname, './src/pages'),
       '@app': path.resolve(__dirname, './src/app'),
-      '@db': path.resolve(__dirname, './src/db'),
       '@assets': path.resolve(__dirname, './src/assets'),
     },
   },
