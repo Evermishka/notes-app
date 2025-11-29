@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMediaQuery } from '@mantine/hooks';
 import { useAuth } from '@/features/auth';
+import { useBreakpoint } from '@/shared/hooks';
 import { Group, Button, Text, Box } from '@mantine/core';
 import {
   ArrowLeftEndOnRectangleIcon,
@@ -22,9 +22,7 @@ import {
 import { useSyncStatus } from '@/shared/services/syncService';
 
 export const Header = () => {
-  const isTiny = useMediaQuery('(max-width: 350px)');
-  const isMobile = useMediaQuery('(max-width: 480px)');
-  const isTablet = useMediaQuery('(max-width: 768px)');
+  const { isTiny, isMobile, isTablet } = useBreakpoint();
 
   if (isTiny) return <TinyHeader />;
   if (isMobile) return <MobileHeader />;

@@ -5,7 +5,7 @@ import { notifications } from '@mantine/notifications';
 import { Header } from '@/widgets/header';
 import { Sidebar } from '@/widgets/notes-sidebar';
 import { NoteWorkspace } from '@/widgets/note-workspace';
-import { useNoteStore } from '@/entities/note';
+import { useNotesError, useNoteDispatch } from '@/entities/note';
 import {
   SIZES,
   RESPONSIVE_SIZES,
@@ -18,7 +18,9 @@ import { EditorModeProvider } from '@/features/note-editor';
 export const MainPage = () => {
   const [opened, setOpened] = useState(false);
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const { state, actions } = useNoteStore();
+  // const loading = useNotesLoading(); // Не используется в текущей реализации
+  const error = useNotesError();
+  const { actions } = useNoteDispatch();
   const {
     state: { isAuthenticated },
   } = useAuth();
@@ -39,20 +41,20 @@ export const MainPage = () => {
   }, [actions, isAuthenticated]);
 
   useEffect(() => {
-    if (!state.error) {
+    if (!error) {
       lastErrorRef.current = null;
       return;
     }
-    if (state.notes.length > 0 || lastErrorRef.current === state.error) return;
+    if (lastErrorRef.current === error) return;
 
-    lastErrorRef.current = state.error;
-    console.error('Failed to load notes:', state.error);
+    lastErrorRef.current = error;
+    console.error('Failed to load notes:', error);
     notifications.show({
       title: NOTES_LOAD_ERROR_TITLE,
-      message: state.error ?? NOTES_LOAD_ERROR_MESSAGE,
+      message: error ?? NOTES_LOAD_ERROR_MESSAGE,
       color: 'danger',
     });
-  }, [state.error, state.notes.length]);
+  }, [error]);
 
   return (
     <EditorModeProvider>

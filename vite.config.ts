@@ -10,6 +10,22 @@ export default defineConfig({
       overlay: false,
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Разделение vendor библиотек
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@mantine/core', '@mantine/hooks', '@mantine/modals', '@mantine/notifications'],
+          editor: ['react-simplemde-editor', 'easymde'],
+          db: ['dexie'],
+          firebase: ['firebase'],
+        },
+      },
+    },
+    // Оптимизация изображений
+    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

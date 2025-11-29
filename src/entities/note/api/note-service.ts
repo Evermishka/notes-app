@@ -53,13 +53,19 @@ class NoteService {
 
   async getAll(): Promise<Note[]> {
     await this.ready();
-    const queueRecords = await db.syncQueue.orderBy('timestamp').toArray();
+
+    // Получаем все данные за два параллельных запроса
+    const [storedNotes, queueRecords] = await Promise.all([
+      db.notes.orderBy('updatedAt').reverse().toArray(),
+      db.syncQueue.orderBy('timestamp').toArray(),
+    ]);
+
+    // Создаем Map для быстрого поиска записей очереди по noteId
     const queueByNote = new Map<string, SyncQueueRecord>();
     queueRecords.forEach((record) => {
       queueByNote.set(record.noteId, record);
     });
 
-    const storedNotes = await db.notes.orderBy('updatedAt').reverse().toArray();
     return storedNotes.map((storedNote) =>
       this.mapStoredNote(storedNote, queueByNote.get(storedNote.id))
     );
@@ -105,13 +111,24 @@ class NoteService {
   private async ensurePendingQueue(): Promise<void> {
     if (this.pendingQueueInitialized) return;
     this.pendingQueueInitialized = true;
-    const allNotes = await db.notes.toArray();
+
+    // Получаем все несинхронизированные заметки и записи в очереди за один запрос
+    const [allNotes, queueRecords] = await Promise.all([
+      db.notes.toArray(),
+      db.syncQueue.toArray(),
+    ]);
+
+    // Создаем Map для быстрого поиска по noteId
+    const queueByNoteId = new Map(queueRecords.map((record) => [record.noteId, record]));
+
     const unsyncedNotes = allNotes.filter((note) => note.synced === false);
-    for (const note of unsyncedNotes) {
-      const existingInQueue = await db.syncQueue.where('noteId').equals(note.id).first();
-      if (existingInQueue) continue;
-      await syncService.enqueue('create', note.id, this.buildSyncPayload(note));
-    }
+
+    // Обрабатываем несинхронизированные заметки батчем
+    const enqueuePromises = unsyncedNotes
+      .filter((note) => !queueByNoteId.has(note.id))
+      .map((note) => syncService.enqueue('create', note.id, this.buildSyncPayload(note)));
+
+    await Promise.all(enqueuePromises);
   }
 
   private buildSyncPayload(note: StoredNote): Partial<Note> {

@@ -1,6 +1,6 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, memo } from 'react';
 import { Stack, Text, Skeleton, Alert, ScrollArea } from '@mantine/core';
-import { useNoteStore } from '@/entities/note';
+import { useSelectedNote, useNotesLoading, useNotesError, useNoteDispatch } from '@/entities/note';
 import { useKeyboardNavigation } from '@/shared/hooks';
 import {
   ERROR_TITLE,
@@ -20,9 +20,12 @@ interface NotesListProps {
   onDrawerClose?: () => void;
 }
 
-export const NotesList = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
+const NotesListComponent = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { state, actions } = useNoteStore();
+  const selectedNote = useSelectedNote();
+  const { actions } = useNoteDispatch();
+  const loading = useNotesLoading();
+  const error = useNotesError();
   const noteRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const handleNoteSelect = useCallback(
@@ -33,7 +36,7 @@ export const NotesList = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
     [actions, onDrawerClose]
   );
 
-  const selectedIndex = filteredNotes.findIndex((note) => note.id === state.selectedNote?.id);
+  const selectedIndex = filteredNotes.findIndex((note) => note.id === selectedNote?.id);
 
   const { handleArrowUp, handleArrowDown } = useKeyboardNavigation({
     refs: noteRefs,
@@ -53,7 +56,7 @@ export const NotesList = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [actions]);
 
-  if (state.loading) {
+  if (loading) {
     return (
       <Stack gap={NOTES_LIST_ITEMS_GAP}>
         {Array.from({ length: NOTES_LIST_SKELETON_COUNT }).map((_, index) => (
@@ -63,15 +66,15 @@ export const NotesList = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
     );
   }
 
-  if (state.error) {
+  if (error) {
     return (
       <Alert title={ERROR_TITLE} color="danger">
-        {state.error}
+        {error}
       </Alert>
     );
   }
 
-  if (state.notes.length === 0) {
+  if (filteredNotes.length === 0) {
     return (
       <Stack
         align="center"
@@ -89,7 +92,7 @@ export const NotesList = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
       h={NOTES_LIST_SCROLL_HEIGHT}
       ref={scrollAreaRef}
       role="listbox"
-      aria-activedescendant={state.selectedNote?.id}
+      aria-activedescendant={selectedNote?.id}
     >
       <Stack gap={NOTES_LIST_ITEMS_GAP}>
         {filteredNotes.map((note: Note, index) => (
@@ -97,7 +100,7 @@ export const NotesList = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
             id={note.id}
             key={note.id}
             note={note}
-            isSelected={state.selectedNote?.id === note.id}
+            isSelected={selectedNote?.id === note.id}
             onClick={() => handleNoteSelect(note)}
             ref={(el) => {
               noteRefs.current[index] = el;
@@ -111,3 +114,5 @@ export const NotesList = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
     </ScrollArea>
   );
 };
+
+export const NotesList = memo(NotesListComponent);
