@@ -19,7 +19,6 @@ export default defineConfig({
           ui: ['@mantine/core', '@mantine/hooks', '@mantine/modals', '@mantine/notifications'],
           editor: ['react-simplemde-editor', 'easymde'],
           db: ['dexie'],
-          firebase: ['firebase'],
         },
       },
     },

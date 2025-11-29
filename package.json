@@ -22,7 +22,7 @@
     "@mantine/notifications": "^8.3.8",
     "dexie": "^4.2.1",
     "easymde": "^2.20.0",
-    "firebase": "^12.6.0",
+    "firebase": "^11.10.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-error-boundary": "^6.0.0",
