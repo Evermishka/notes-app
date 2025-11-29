@@ -1,12 +1,10 @@
-import React, { useCallback, forwardRef } from 'react';
+import React, { useCallback, forwardRef, memo } from 'react';
 import { Flex, Text, UnstyledButton, Tooltip } from '@mantine/core';
 import { CheckCircleIcon, ExclamationTriangleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import type { Note } from '@/entities/note';
 import { getNoteSyncMeta } from '@/entities/note/model/sync-status';
 import { truncateTitle, truncateContent, formatDate } from '@/shared/utils';
 import {
-  NOTE_ITEM_PADDING,
-  NOTE_ITEM_BORDER_RADIUS,
   NOTE_ITEM_TITLE_SIZE,
   NOTE_ITEM_TITLE_WEIGHT,
   NOTE_ITEM_LINE_CLAMP_TITLE,
@@ -28,7 +26,7 @@ interface NoteItemProps {
   onEscape?: () => void;
 }
 
-export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
+const NoteItemComponent = forwardRef<HTMLButtonElement, NoteItemProps>(
   ({ note, isSelected, onClick, onArrowUp, onArrowDown, onEscape }, ref) => {
     const handleClick = useCallback(() => {
       onClick();
@@ -68,22 +66,7 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         tabIndex={0}
-        style={{
-          width: '100%',
-          padding: NOTE_ITEM_PADDING,
-          borderRadius: NOTE_ITEM_BORDER_RADIUS,
-          backgroundColor: isSelected ? 'var(--mantine-color-primary-light)' : 'transparent',
-          border: `1px solid ${isSelected ? 'var(--mantine-color-primary-5)' : 'transparent'}`,
-          textAlign: 'left',
-          display: 'block',
-          transition: 'all 0.15s ease',
-        }}
-        onMouseEnter={(e) => {
-          if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--mantine-color-neutral-0)';
-        }}
-        onMouseLeave={(e) => {
-          if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
-        }}
+        className={`note-item ${isSelected ? 'selected' : ''}`}
         aria-label={`Выбрать заметку: ${note.title}`}
         role="option"
         aria-selected={isSelected}
@@ -169,3 +152,5 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
     );
   }
 );
+
+export const NoteItem = memo(NoteItemComponent);

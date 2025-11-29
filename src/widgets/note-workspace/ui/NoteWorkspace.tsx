@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Stack } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { useNoteStore } from '@/entities/note';
+import { useSelectedNote, useNoteDispatch } from '@/entities/note';
 import { useEditorMode } from '@/features/note-editor';
 import { NoteEditor, NoteViewer, NoteViewerEmptyState } from '@/features/note-editor';
 import { useDeleteModal, DeleteConfirm } from '@/features/note-delete';
@@ -14,15 +14,16 @@ import {
 import { NoteHeader } from './NoteHeader';
 
 export const NoteWorkspace = () => {
-  const { state, actions } = useNoteStore();
+  const selectedNote = useSelectedNote();
+  const { actions } = useNoteDispatch();
   const { state: editorState, setMode } = useEditorMode();
   const { isOpen, openModal, closeModal } = useDeleteModal();
 
   const handleConfirmDelete = useCallback(async (): Promise<void> => {
-    if (!state.selectedNote) return;
+    if (!selectedNote) return;
 
     try {
-      await actions.delete(state.selectedNote.id);
+      await actions.delete(selectedNote.id);
       closeModal();
       setMode('view');
       notifications.show({
@@ -37,12 +38,12 @@ export const NoteWorkspace = () => {
         color: 'danger',
       });
     }
-  }, [state.selectedNote, actions, closeModal, setMode]);
+  }, [selectedNote, actions, closeModal, setMode]);
 
   return (
     <>
-      {!state.selectedNote && <NoteViewerEmptyState />}
-      {state.selectedNote && (
+      {!selectedNote && <NoteViewerEmptyState />}
+      {selectedNote && (
         <Stack gap="md">
           <NoteHeader mode={editorState.mode} onModeChange={setMode} onDelete={openModal} />
           {editorState.mode === 'view' && <NoteViewer />}
@@ -53,7 +54,7 @@ export const NoteWorkspace = () => {
         isOpen={isOpen}
         onClose={closeModal}
         onConfirm={handleConfirmDelete}
-        noteTitle={state.selectedNote?.title || ''}
+        noteTitle={selectedNote?.title || ''}
       />
     </>
   );

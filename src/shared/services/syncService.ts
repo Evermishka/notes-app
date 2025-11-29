@@ -12,6 +12,13 @@ export type SyncState = {
 
 type SyncListener = (status: SyncState) => void;
 
+// Приоритеты операций синхронизации (меньше число = выше приоритет)
+const SYNC_PRIORITIES: Record<SyncAction, number> = {
+  delete: 0, // Удаления обрабатываются первыми
+  update: 1, // Затем обновления
+  create: 2, // Создания последними
+};
+
 class SyncService {
   private static instance: SyncService;
   private readonly readyPromise: Promise<void>;
@@ -21,7 +28,7 @@ class SyncService {
   private lastError: string | null = null;
   private listeners = new Set<SyncListener>();
   private noteListeners = new Set<(noteId: string) => void>();
-  private authUnsubscribe?: () => void;
+  // private authUnsubscribe?: () => void;
   private queueRunning = false;
 
   private constructor() {
@@ -86,7 +93,7 @@ class SyncService {
         action: updatedAction,
         payload,
         timestamp,
-        error: null,
+        error: undefined,
       });
       await this.afterQueueMutation(noteId);
       return;
@@ -98,7 +105,10 @@ class SyncService {
       payload,
       timestamp,
     };
-    await db.syncQueue.add(record);
+    await db.syncQueue.add({
+      ...record,
+      error: undefined,
+    });
     await this.afterQueueMutation(noteId);
   }
 
@@ -150,32 +160,62 @@ class SyncService {
     this.notify();
 
     try {
+      const BATCH_SIZE = 5; // Обрабатываем по 5 записей одновременно
+
       while (this.online) {
-        const nextRecord = await db.syncQueue.orderBy('timestamp').first();
-        if (!nextRecord) {
+        // Получаем следующую партию записей для обработки с учетом приоритетов
+        const allRecords = await db.syncQueue.orderBy('timestamp').toArray();
+
+        // Сортируем по приоритету, затем по времени
+        const sortedRecords = allRecords
+          .sort((a, b) => {
+            const priorityDiff = SYNC_PRIORITIES[a.action] - SYNC_PRIORITIES[b.action];
+            if (priorityDiff !== 0) return priorityDiff;
+            return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+          })
+          .slice(0, BATCH_SIZE);
+
+        const batchRecords = sortedRecords;
+
+        if (batchRecords.length === 0) {
           break;
         }
 
-        try {
-          await firebaseService.syncNoteRecord(nextRecord);
-          if (nextRecord.id) {
-            await db.syncQueue.delete(nextRecord.id);
+        // Обрабатываем партию параллельно
+        const batchPromises = batchRecords.map(async (record) => {
+          try {
+            await firebaseService.syncNoteRecord(record);
+            if (record.id) {
+              await db.syncQueue.delete(record.id);
+            }
+            await this.markNoteSynced(record);
+            this.notifyNoteChange(record.noteId);
+            return { success: true, record };
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : 'Не удалось синхронизировать заметку.';
+            if (record.id) {
+              await db.syncQueue.update(record.id, { error: message });
+            }
+            this.lastError = message;
+            this.notifyNoteChange(record.noteId);
+            return { success: false, record, error: message };
           }
-          await this.markNoteSynced(nextRecord);
-          this.notifyNoteChange(nextRecord.noteId);
-          this.lastError = null;
-        } catch (error) {
-          const message =
-            error instanceof Error ? error.message : 'Не удалось синхронизировать заметку.';
-          if (nextRecord.id) {
-            await db.syncQueue.update(nextRecord.id, { error: message });
-          }
-          this.lastError = message;
-          this.notifyNoteChange(nextRecord.noteId);
+        });
+
+        const results = await Promise.allSettled(batchPromises);
+
+        // Если есть ошибки в партии, останавливаемся
+        const hasErrors = results.some(
+          (result) =>
+            result.status === 'rejected' || (result.status === 'fulfilled' && !result.value.success)
+        );
+
+        if (hasErrors) {
           break;
-        } finally {
-          await this.refreshQueueLength();
         }
+
+        await this.refreshQueueLength();
       }
     } finally {
       this.processing = false;

@@ -22,8 +22,8 @@ class NotesDexie extends Dexie {
 
   constructor() {
     super('notes-app');
-    this.version(1).stores({
-      notes: '&id, title, updatedAt, synced',
+    this.version(2).stores({
+      notes: '&id, title, content, updatedAt, synced',
       syncQueue: '++id, noteId, action, timestamp',
     });
   }

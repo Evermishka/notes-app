@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import type { Note } from '@/entities/note';
 
 export const useKeyboardNavigation = ({
@@ -27,4 +27,28 @@ export const useKeyboardNavigation = ({
   }, [length, currentIndex, setSelectedItem, allItems, refs]);
 
   return { handleArrowUp, handleArrowDown };
+};
+
+// Хук для оптимизированных медиа-запросов
+export const useBreakpoint = () => {
+  const [isTiny, setIsTiny] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const updateBreakpoints = () => {
+      const width = window.innerWidth;
+      setIsTiny(width <= 350);
+      setIsMobile(width <= 480);
+      setIsTablet(width <= 768);
+      setIsDesktop(width > 768);
+    };
+
+    updateBreakpoints();
+    window.addEventListener('resize', updateBreakpoints);
+    return () => window.removeEventListener('resize', updateBreakpoints);
+  }, []);
+
+  return { isTiny, isMobile, isTablet, isDesktop };
 };
