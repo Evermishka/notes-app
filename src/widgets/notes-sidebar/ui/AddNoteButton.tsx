@@ -10,7 +10,7 @@ import {
   ADD_BUTTON_TEXT,
   ADD_NOTE_BUTTON_HEIGHT,
   ADD_NOTE_BUTTON_PADDING,
-  ADD_NOTE_BUTTON_ICON_SIZE,
+  ICON_SIZE,
 } from '@/shared/config';
 
 interface AddNoteButtonProps {
@@ -41,9 +41,7 @@ export const AddNoteButton: React.FC<AddNoteButtonProps> = ({ onNoteAdded }) => 
 
   return (
     <Button
-      leftSection={
-        <PlusIcon width={ADD_NOTE_BUTTON_ICON_SIZE} height={ADD_NOTE_BUTTON_ICON_SIZE} />
-      }
+      leftSection={<PlusIcon width={ICON_SIZE} height={ICON_SIZE} />}
       onClick={handleAdd}
       loading={state.loading}
       fullWidth

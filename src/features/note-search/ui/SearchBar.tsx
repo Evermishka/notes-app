@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { TextInput } from '@mantine/core';
-import { SEARCH_PLACEHOLDER, SEARCH_ARIA_LABEL } from '@/shared/config';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { SEARCH_PLACEHOLDER, SEARCH_ARIA_LABEL, ICON_SIZE } from '@/shared/config';
 import { useDebouncedCallback } from '@mantine/hooks';
 
 interface SearchBarProps {
@@ -30,6 +31,7 @@ export const SearchBar = ({ onSearchChange }: SearchBarProps) => {
       value={searchInput}
       onChange={handleChange}
       aria-label={SEARCH_ARIA_LABEL}
+      leftSection={<MagnifyingGlassIcon width={ICON_SIZE} height={ICON_SIZE} />}
     />
   );
 };

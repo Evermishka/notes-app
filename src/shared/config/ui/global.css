@@ -1,0 +1,28 @@
+/* Кастомные стили и анимации */
+
+/* Анимация пульсации для ожидания синхронизации */
+.sync-pending-pulse {
+  animation: syncPulse 2s ease-in-out infinite;
+}
+
+@keyframes syncPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* Анимация вращения для индикаторов загрузки */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

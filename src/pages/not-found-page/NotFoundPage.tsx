@@ -8,7 +8,7 @@ export const NotFoundPage = () => {
   return (
     <Container size="sm" py={40}>
       <Box ta="center">
-        <Title order={1} c="red">
+        <Title order={1} c="danger">
           404 — Страница не найдена
         </Title>
         <Group justify="center" mt={30}>

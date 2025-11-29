@@ -5,7 +5,11 @@ import { SearchBar } from '@/features/note-search';
 import { AddNoteButton } from './AddNoteButton';
 import { NotesList } from './NotesList';
 
-export const Sidebar = () => {
+interface SidebarProps {
+  onDrawerClose?: () => void;
+}
+
+export const Sidebar = ({ onDrawerClose }: SidebarProps) => {
   const { setEditMode } = useEditorMode();
   const { setSearchQuery, filteredNotes } = useNoteSearch();
 
@@ -13,7 +17,7 @@ export const Sidebar = () => {
     <Stack p="md" gap="md" w="100%" h="100vh">
       <AddNoteButton onNoteAdded={setEditMode} />
       <SearchBar onSearchChange={setSearchQuery} />
-      <NotesList filteredNotes={filteredNotes} />
+      <NotesList filteredNotes={filteredNotes} onDrawerClose={onDrawerClose} />
     </Stack>
   );
 };

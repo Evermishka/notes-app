@@ -1,8 +1,14 @@
 import { useCallback } from 'react';
-import { Group, Button, Tooltip, Title, Text, TextInput } from '@mantine/core';
-import { PencilSquareIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { useMediaQuery } from '@mantine/hooks';
+import { Group, Button, Tooltip, Title, Text, TextInput, Menu, ActionIcon } from '@mantine/core';
+import {
+  PencilSquareIcon,
+  TrashIcon,
+  EyeIcon,
+  EllipsisVerticalIcon,
+} from '@heroicons/react/24/outline';
 import { useNoteStore } from '@/entities/note';
-import { SIZES } from '@/shared/config';
+import { ICON_SIZE } from '@/shared/config';
 import { getNoteSyncMeta } from '@/entities/note/model/sync-status';
 
 interface NoteHeaderProps {
@@ -13,6 +19,7 @@ interface NoteHeaderProps {
 
 export const NoteHeader = ({ mode, onModeChange, onDelete }: NoteHeaderProps) => {
   const { state, actions } = useNoteStore();
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   const handleEdit = useCallback((): void => {
     onModeChange('edit');
@@ -69,37 +76,74 @@ export const NoteHeader = ({ mode, onModeChange, onDelete }: NoteHeaderProps) =>
           </>
         )}
       </div>
-      <Group gap="xs">
-        {mode === 'view' && (
-          <Tooltip label="Редактировать">
-            <Button
-              variant="subtle"
-              size="sm"
-              onClick={handleEdit}
-              aria-label="Редактировать заметку"
+      {isMobile ? (
+        <Menu shadow="md" width={200}>
+          <Menu.Target>
+            <ActionIcon variant="subtle" size="lg" aria-label="Действия с заметкой">
+              <EllipsisVerticalIcon width={ICON_SIZE} height={ICON_SIZE} />
+            </ActionIcon>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            {mode === 'view' && (
+              <Menu.Item
+                leftSection={<PencilSquareIcon width={ICON_SIZE} height={ICON_SIZE} />}
+                onClick={handleEdit}
+              >
+                Редактировать
+              </Menu.Item>
+            )}
+            {mode === 'edit' && (
+              <Menu.Item
+                leftSection={<EyeIcon width={ICON_SIZE} height={ICON_SIZE} />}
+                onClick={handleView}
+              >
+                Просмотреть
+              </Menu.Item>
+            )}
+            <Menu.Divider />
+            <Menu.Item
+              leftSection={<TrashIcon width={ICON_SIZE} height={ICON_SIZE} />}
+              onClick={handleDelete}
+              color="red"
             >
-              <PencilSquareIcon width={SIZES.iconWidth} height={SIZES.iconHeight} />
+              Удалить
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      ) : (
+        <Group gap="xs">
+          {mode === 'view' && (
+            <Tooltip label="Редактировать">
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={handleEdit}
+                aria-label="Редактировать заметку"
+              >
+                <PencilSquareIcon width={ICON_SIZE} height={ICON_SIZE} />
+              </Button>
+            </Tooltip>
+          )}
+          {mode === 'edit' && (
+            <Tooltip label="Просмотреть">
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={handleView}
+                aria-label="Просмотреть заметку"
+              >
+                <EyeIcon width={ICON_SIZE} height={ICON_SIZE} />
+              </Button>
+            </Tooltip>
+          )}
+          <Tooltip label="Удалить">
+            <Button variant="subtle" size="sm" onClick={handleDelete} aria-label="Удалить заметку">
+              <TrashIcon width={ICON_SIZE} height={ICON_SIZE} />
             </Button>
           </Tooltip>
-        )}
-        {mode === 'edit' && (
-          <Tooltip label="Просмотреть">
-            <Button
-              variant="subtle"
-              size="sm"
-              onClick={handleView}
-              aria-label="Просмотреть заметку"
-            >
-              <EyeIcon width={SIZES.iconWidth} height={SIZES.iconHeight} />
-            </Button>
-          </Tooltip>
-        )}
-        <Tooltip label="Удалить">
-          <Button variant="subtle" size="sm" onClick={handleDelete} aria-label="Удалить заметку">
-            <TrashIcon width={SIZES.iconWidth} height={SIZES.iconHeight} />
-          </Button>
-        </Tooltip>
-      </Group>
+        </Group>
+      )}
     </Group>
   );
 };

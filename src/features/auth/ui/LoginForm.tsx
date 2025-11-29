@@ -93,7 +93,7 @@ export const LoginForm = () => {
           onFocus={handleFocus}
           w="100%"
         />
-        {state.error && <Alert title={getServerErrorMessage()} color="red" mt="md" />}
+        {state.error && <Alert title={getServerErrorMessage()} color="danger" mt="md" />}
         <Button
           type="submit"
           fullWidth

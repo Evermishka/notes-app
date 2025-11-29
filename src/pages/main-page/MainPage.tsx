@@ -1,16 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { AppShell, Burger, Group } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { Header } from '@/widgets/header';
 import { Sidebar } from '@/widgets/notes-sidebar';
 import { NoteWorkspace } from '@/widgets/note-workspace';
 import { useNoteStore } from '@/entities/note';
-import { SIZES, NOTES_LOAD_ERROR_TITLE, NOTES_LOAD_ERROR_MESSAGE } from '@/shared/config';
+import {
+  SIZES,
+  RESPONSIVE_SIZES,
+  NOTES_LOAD_ERROR_TITLE,
+  NOTES_LOAD_ERROR_MESSAGE,
+} from '@/shared/config';
 import { useAuth } from '@/features/auth';
 import { EditorModeProvider } from '@/features/note-editor';
 
 export const MainPage = () => {
   const [opened, setOpened] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const { state, actions } = useNoteStore();
   const {
     state: { isAuthenticated },
@@ -43,7 +50,7 @@ export const MainPage = () => {
     notifications.show({
       title: NOTES_LOAD_ERROR_TITLE,
       message: state.error ?? NOTES_LOAD_ERROR_MESSAGE,
-      color: 'red',
+      color: 'danger',
     });
   }, [state.error, state.notes.length]);
 
@@ -51,7 +58,7 @@ export const MainPage = () => {
     <EditorModeProvider>
       <AppShell
         padding="md"
-        header={{ height: SIZES.headerHeight }}
+        header={{ height: RESPONSIVE_SIZES.headerHeight.base }}
         navbar={{
           width: SIZES.navbarWidth,
           breakpoint: 'sm',
@@ -59,14 +66,28 @@ export const MainPage = () => {
         }}
       >
         <AppShell.Header>
-          <Group justify="space-between">
-            <Burger opened={opened} onClick={toggleDrawer} hiddenFrom="sm" size="sm" />
+          <Group justify="space-between" align="center" px={{ base: 'xs', sm: 'md' }}>
+            <Burger
+              opened={opened}
+              onClick={toggleDrawer}
+              hiddenFrom="sm"
+              size="lg"
+              p="sm"
+              style={{ flexShrink: 0 }}
+            />
             <Header />
           </Group>
         </AppShell.Header>
 
         <AppShell.Navbar>
-          <Sidebar />
+          <Sidebar
+            onDrawerClose={() => {
+              // Only close drawer on mobile (when it's overlay)
+              if (isMobile) {
+                setOpened(false);
+              }
+            }}
+          />
         </AppShell.Navbar>
 
         <AppShell.Main>
