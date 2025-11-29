@@ -17,11 +17,6 @@ export const ProtectedRoute = ({
   const { state } = useAuth();
   const { isAuthenticated, isLoading, error } = state;
 
-  // TEMPORARY: Skip authentication for testing
-  if (import.meta.env.MODE === 'development') {
-    return <>{children}</>;
-  }
-
   if (isLoading) {
     return (
       fallback || (

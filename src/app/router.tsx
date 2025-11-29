@@ -26,6 +26,7 @@ export const Router = () => {
             }
           />
           <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path="/test-editor" element={<MainPage />} />
           <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
