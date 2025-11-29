@@ -1,12 +1,10 @@
 import React, { useCallback, forwardRef } from 'react';
-import { Flex, Text, UnstyledButton } from '@mantine/core';
+import { Flex, Text, UnstyledButton, Tooltip } from '@mantine/core';
+import { CheckCircleIcon, ExclamationTriangleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import type { Note } from '@/entities/note';
 import { getNoteSyncMeta } from '@/entities/note/model/sync-status';
 import { truncateTitle, truncateContent, formatDate } from '@/shared/utils';
 import {
-  SELECTED_BACKGROUND,
-  SELECTED_BORDER,
-  HOVER_BACKGROUND,
   NOTE_ITEM_PADDING,
   NOTE_ITEM_BORDER_RADIUS,
   NOTE_ITEM_TITLE_SIZE,
@@ -60,6 +58,9 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
 
     const formattedDate = formatDate(note.updatedAt);
     const { text: statusText, color: statusColor } = getNoteSyncMeta(note);
+    const hasSyncError = Boolean(note.syncError);
+    const isSynced = note.synced !== false;
+    const shouldShowStatusIcon = hasSyncError || !isSynced;
 
     return (
       <UnstyledButton
@@ -71,13 +72,14 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
           width: '100%',
           padding: NOTE_ITEM_PADDING,
           borderRadius: NOTE_ITEM_BORDER_RADIUS,
-          backgroundColor: isSelected ? SELECTED_BACKGROUND : 'transparent',
-          border: `1px solid ${isSelected ? SELECTED_BORDER : 'transparent'}`,
+          backgroundColor: isSelected ? 'var(--mantine-color-primary-light)' : 'transparent',
+          border: `1px solid ${isSelected ? 'var(--mantine-color-primary-5)' : 'transparent'}`,
           textAlign: 'left',
           display: 'block',
+          transition: 'all 0.15s ease',
         }}
         onMouseEnter={(e) => {
-          if (!isSelected) e.currentTarget.style.backgroundColor = HOVER_BACKGROUND;
+          if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--mantine-color-neutral-0)';
         }}
         onMouseLeave={(e) => {
           if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
@@ -106,17 +108,61 @@ export const NoteItem = forwardRef<HTMLButtonElement, NoteItemProps>(
             >
               {truncatedContent}
             </Text>
-            <Text
-              size={NOTE_ITEM_DATE_SIZE}
-              c="dimmed"
-              lineClamp={NOTE_ITEM_LINE_CLAMP_DATE}
-              title={note.updatedAt}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 8,
+                marginTop: 4,
+              }}
             >
-              {formattedDate}
-            </Text>
-            <Text size="xs" c={statusColor} lineClamp={1}>
-              {statusText}
-            </Text>
+              <Text
+                size={NOTE_ITEM_DATE_SIZE}
+                c="dimmed"
+                lineClamp={NOTE_ITEM_LINE_CLAMP_DATE}
+                title={note.updatedAt}
+                style={{ flex: 1 }}
+              >
+                {formattedDate}
+              </Text>
+              {shouldShowStatusIcon && (
+                <Tooltip label={statusText} position="top" withArrow>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 20,
+                      height: 20,
+                    }}
+                  >
+                    {statusColor === 'danger' && (
+                      <ExclamationTriangleIcon
+                        width={16}
+                        height={16}
+                        color="var(--mantine-color-red-6)"
+                      />
+                    )}
+                    {statusColor === 'primary' && (
+                      <ClockIcon
+                        width={16}
+                        height={16}
+                        color="var(--mantine-color-blue-6)"
+                        className="sync-pending-pulse"
+                      />
+                    )}
+                    {statusColor === 'secondary' && (
+                      <CheckCircleIcon
+                        width={16}
+                        height={16}
+                        color="var(--mantine-color-green-6)"
+                      />
+                    )}
+                  </span>
+                </Tooltip>
+              )}
+            </div>
           </div>
         </Flex>
       </UnstyledButton>

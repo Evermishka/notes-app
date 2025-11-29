@@ -2,7 +2,7 @@ import type { Note } from './types';
 
 export type NoteSyncMeta = {
   text: string;
-  color: 'teal' | 'orange' | 'red';
+  color: 'secondary' | 'primary' | 'danger';
 };
 
 export const getNoteSyncMeta = (note: Note): NoteSyncMeta => {
@@ -10,12 +10,12 @@ export const getNoteSyncMeta = (note: Note): NoteSyncMeta => {
   const isSynced = note.synced !== false;
 
   if (hasError) {
-    return { text: 'Ошибка синхронизации', color: 'red' };
+    return { text: 'Ошибка синхронизации', color: 'danger' };
   }
 
   if (isSynced) {
-    return { text: 'Синхронизировано', color: 'teal' };
+    return { text: 'Синхронизировано', color: 'secondary' };
   }
 
-  return { text: 'Ожидает синхронизации', color: 'orange' };
+  return { text: 'Ожидает синхронизации', color: 'primary' };
 };

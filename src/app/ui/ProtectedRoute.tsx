@@ -17,6 +17,11 @@ export const ProtectedRoute = ({
   const { state } = useAuth();
   const { isAuthenticated, isLoading, error } = state;
 
+  // TEMPORARY: Skip authentication for testing
+  if (process.env.NODE_ENV === 'development') {
+    return <>{children}</>;
+  }
+
   if (isLoading) {
     return (
       fallback || (

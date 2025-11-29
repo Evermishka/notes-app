@@ -23,7 +23,7 @@ export const DeleteConfirm = ({ isOpen, onClose, onConfirm, noteTitle }: DeleteC
         <Button variant="default" onClick={onClose}>
           {DELETE_BUTTON_CANCEL}
         </Button>
-        <Button variant="filled" color="red" onClick={onConfirm}>
+        <Button variant="filled" color="danger" onClick={onConfirm}>
           {DELETE_BUTTON_CONFIRM}
         </Button>
       </Group>

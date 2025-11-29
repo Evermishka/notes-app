@@ -17,18 +17,20 @@ import type { Note } from '@/entities/note';
 
 interface NotesListProps {
   filteredNotes: Note[];
+  onDrawerClose?: () => void;
 }
 
-export const NotesList = ({ filteredNotes }: NotesListProps) => {
+export const NotesList = ({ filteredNotes, onDrawerClose }: NotesListProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { state, actions } = useNoteStore();
   const noteRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const handleNoteSelect = useCallback(
     (note: Note) => {
+      onDrawerClose?.();
       actions.select(note);
     },
-    [actions]
+    [actions, onDrawerClose]
   );
 
   const selectedIndex = filteredNotes.findIndex((note) => note.id === state.selectedNote?.id);
@@ -63,7 +65,7 @@ export const NotesList = ({ filteredNotes }: NotesListProps) => {
 
   if (state.error) {
     return (
-      <Alert title={ERROR_TITLE} color="red">
+      <Alert title={ERROR_TITLE} color="danger">
         {state.error}
       </Alert>
     );

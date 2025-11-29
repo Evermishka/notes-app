@@ -1,7 +1,3 @@
-export const HEADER_AUTH_BUTTON_SIZE = 'sm';
-
-export const HEADER_ICON_SIZE = 18;
-
 export const HEADER_AUTH_BUTTON_TEXT = {
   login: 'Войти',
   logout: 'Выход',

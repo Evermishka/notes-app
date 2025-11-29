@@ -28,13 +28,13 @@ export const NoteWorkspace = () => {
       notifications.show({
         title: DELETE_SUCCESS_TITLE,
         message: DELETE_SUCCESS_MESSAGE,
-        color: 'green',
+        color: 'secondary',
       });
     } catch {
       notifications.show({
         title: DELETE_ERROR_TITLE,
         message: DELETE_ERROR_MESSAGE,
-        color: 'red',
+        color: 'danger',
       });
     }
   }, [state.selectedNote, actions, closeModal, setMode]);
