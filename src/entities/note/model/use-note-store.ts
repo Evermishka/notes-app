@@ -136,9 +136,11 @@ export const useNoteContext = () => {
     let isMounted = true;
     const unsubscribe = syncService.subscribeDownloadComplete(async () => {
       if (!isMounted) return;
+      console.warn('Download complete, refreshing notes from local database');
       // После загрузки из Firebase обновляем список заметок
       try {
         const notes = await noteService.getAll();
+        console.warn(`Refreshed ${notes.length} notes`);
         if (isMounted) {
           dispatch({ type: 'SET_NOTES', payload: notes });
         }

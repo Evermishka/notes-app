@@ -19,9 +19,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     if (state.isAuthenticated && !hasDownloadedRef.current) {
       hasDownloadedRef.current = true;
-      void syncService.downloadFromFirebase().catch((error) => {
-        console.error('Failed to download notes from Firebase:', error);
-      });
+      if (import.meta.env.MODE === 'development') {
+        // В dev режиме просто обновляем интерфейс с данными из локальной базы
+        console.warn('Dev mode: Notifying interface update');
+        syncService.notifyInterfaceUpdate();
+      } else {
+        // В production режиме загружаем из Firebase
+        void syncService.downloadFromFirebase().catch((error) => {
+          console.error('Failed to download notes from Firebase:', error);
+        });
+      }
     }
   }, [state.isAuthenticated]);
 

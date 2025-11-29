@@ -73,6 +73,14 @@ class SyncService {
     };
   }
 
+  /**
+   * Уведомляет подписчиков о необходимости обновить интерфейс
+   * Используется в dev режиме для загрузки существующих данных из локальной базы
+   */
+  notifyInterfaceUpdate(): void {
+    this.notifyDownloadComplete();
+  }
+
   async enqueue(action: SyncAction, noteId: string, payload: Partial<Note>): Promise<void> {
     await this.ensureReady();
     const timestamp = new Date().toISOString();
@@ -263,6 +271,7 @@ class SyncService {
   async downloadFromFirebase(): Promise<void> {
     try {
       await this.ensureReady();
+
       console.warn('Downloading notes from Firebase...');
 
       // Загружаем все заметки из Firebase
