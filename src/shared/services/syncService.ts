@@ -28,7 +28,7 @@ class SyncService {
   private lastError: string | null = null;
   private listeners = new Set<SyncListener>();
   private noteListeners = new Set<(noteId: string) => void>();
-  // private authUnsubscribe?: () => void;
+  private downloadListeners = new Set<() => void>();
   private queueRunning = false;
 
   private constructor() {
@@ -66,6 +66,13 @@ class SyncService {
     };
   }
 
+  subscribeDownloadComplete(listener: () => void): () => void {
+    this.downloadListeners.add(listener);
+    return () => {
+      this.downloadListeners.delete(listener);
+    };
+  }
+
   async enqueue(action: SyncAction, noteId: string, payload: Partial<Note>): Promise<void> {
     await this.ensureReady();
     const timestamp = new Date().toISOString();
@@ -82,7 +89,7 @@ class SyncService {
           action: 'delete',
           payload: {},
           timestamp,
-          error: null,
+          error: undefined,
         });
         await this.afterQueueMutation(noteId);
         return;
@@ -118,7 +125,7 @@ class SyncService {
       window.addEventListener('online', this.handleOnline);
       window.addEventListener('offline', this.handleOffline);
     }
-    this.authUnsubscribe = firebaseService.onAuthStateChanged(() => {
+    firebaseService.onAuthStateChanged(() => {
       if (this.online) {
         void this.processQueue();
       }
@@ -245,6 +252,10 @@ class SyncService {
     this.noteListeners.forEach((listener) => listener(noteId));
   }
 
+  private notifyDownloadComplete(): void {
+    this.downloadListeners.forEach((listener) => listener());
+  }
+
   /**
    * Загружает все заметки из Firebase и обновляет локальную базу данных
    * Вызывается после авторизации для синхронизации данных
@@ -284,6 +295,9 @@ class SyncService {
       }
 
       console.warn(`Downloaded ${firebaseNotes.length} notes from Firebase`);
+
+      // Уведомляем подписчиков о завершении загрузки
+      this.notifyDownloadComplete();
     } catch (error) {
       console.error('Failed to download from Firebase:', error);
       throw error;

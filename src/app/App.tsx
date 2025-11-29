@@ -1,5 +1,5 @@
 import { Providers } from './ui';
-import { Router } from './Router';
+import { Router } from './router';
 
 export const App = () => {
   return (

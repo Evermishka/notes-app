@@ -131,6 +131,27 @@ export const useNoteContext = () => {
     };
   }, [dispatch]);
 
+  // Подписка на завершение загрузки из Firebase
+  useEffect(() => {
+    let isMounted = true;
+    const unsubscribe = syncService.subscribeDownloadComplete(async () => {
+      if (!isMounted) return;
+      // После загрузки из Firebase обновляем список заметок
+      try {
+        const notes = await noteService.getAll();
+        if (isMounted) {
+          dispatch({ type: 'SET_NOTES', payload: notes });
+        }
+      } catch (error) {
+        console.error('Failed to refresh notes after download:', error);
+      }
+    });
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, [dispatch]);
+
   return {
     state,
     dispatchValue,

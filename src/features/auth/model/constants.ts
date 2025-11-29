@@ -14,6 +14,7 @@ export const ERROR_MESSAGES: Record<
   | 'INVALID_PASSWORD'
   | 'EMPTY_FIELDS'
   | 'WRONG_CREDENTIALS'
+  | 'NETWORK_ERROR'
   | 'STORAGE_ERROR'
   | 'UNKNOWN_ERROR',
   string
@@ -22,6 +23,7 @@ export const ERROR_MESSAGES: Record<
   INVALID_PASSWORD: `Пароль должен содержать минимум ${PASSWORD_MIN_LENGTH} символов`,
   EMPTY_FIELDS: 'Заполните все поля',
   WRONG_CREDENTIALS: 'Неверный логин или пароль',
+  NETWORK_ERROR: 'Ошибка сети. Проверьте подключение к интернету',
   STORAGE_ERROR: 'Ошибка при работе с хранилищем',
   UNKNOWN_ERROR: 'Ошибка при входе. Попробуйте позже',
 } as const;

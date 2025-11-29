@@ -18,7 +18,7 @@ export const ProtectedRoute = ({
   const { isAuthenticated, isLoading, error } = state;
 
   // TEMPORARY: Skip authentication for testing
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.MODE === 'development') {
     return <>{children}</>;
   }
 
